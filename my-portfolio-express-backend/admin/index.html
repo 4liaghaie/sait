@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portfolio Admin</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: "Inter", system-ui, -apple-system, sans-serif;
+      }
+      body {
+        margin: 0;
+        padding: 24px;
+        background: #0b1016;
+        color: #e9eef7;
+      }
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        gap: 18px;
+      }
+      section {
+        border: 1px solid #1f2a3a;
+        border-radius: 14px;
+        padding: 16px;
+        background: linear-gradient(135deg, #0f1722, #0b1016);
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.35);
+      }
+      h1 {
+        margin: 0 0 8px;
+      }
+      h2 {
+        margin: 12px 0;
+      }
+      label {
+        display: block;
+        margin: 8px 0 4px;
+        font-size: 12px;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: #9fb3d1;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid #1f2a3a;
+        background: #0c121a;
+        color: #e9eef7;
+        font-size: 14px;
+      }
+      textarea {
+        min-height: 90px;
+      }
+      button {
+        margin-top: 10px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 0;
+        background: linear-gradient(135deg, #2dd4bf, #38bdf8);
+        color: #04101f;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      button.secondary {
+        background: transparent;
+        border: 1px solid #1f2a3a;
+        color: #e9eef7;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #111827;
+        border: 1px solid #1f2a3a;
+        margin: 4px 4px 0 0;
+        font-size: 12px;
+        cursor: pointer;
+      }
+      .grid {
+        display: grid;
+        gap: 12px;
+      }
+      .columns-2 {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      }
+      code {
+        background: #0c121a;
+        padding: 2px 6px;
+        border-radius: 6px;
+        border: 1px solid #1f2a3a;
+      }
+      .muted {
+        color: #9fb3d1;
+        font-size: 13px;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+      .danger {
+        background: #ef4444;
+        color: #0b1016;
+      }
+      .hidden {
+        display: none;
+      }
+      .thumb-grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      }
+      .thumb-card {
+        border: 1px solid #1f2a3a;
+        border-radius: 12px;
+        padding: 8px;
+        background: #0c121a;
+        cursor: pointer;
+        transition: border-color 0.2s ease, transform 0.2s ease;
+      }
+      .thumb-card:hover {
+        border-color: #38bdf8;
+        transform: translateY(-2px);
+      }
+      .thumb-card img {
+        width: 100%;
+        max-height: 100px;
+        object-fit: cover;
+        border-radius: 10px;
+        background: #111827;
+      }
+      .thumb-meta {
+        margin-top: 6px;
+        line-height: 1.3;
+      }
+      .thumb-inline {
+        width: 140px;
+        border-radius: 10px;
+        border: 1px solid #1f2a3a;
+        background: #111827;
+        margin-top: 6px;
+      }
+      .multi-select {
+        position: relative;
+      }
+      .multi-select .control {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        min-height: 42px;
+        padding: 8px;
+        border-radius: 10px;
+        border: 1px solid #1f2a3a;
+        background: #0c121a;
+        cursor: pointer;
+      }
+      .multi-select .tag {
+        background: #111827;
+        border: 1px solid #1f2a3a;
+        padding: 4px 8px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+      }
+      .multi-select .tag button {
+        background: transparent;
+        border: none;
+        color: #9fb3d1;
+        cursor: pointer;
+        padding: 0;
+        margin: 0;
+      }
+      .multi-select .placeholder {
+        color: #9fb3d1;
+        font-size: 13px;
+      }
+      .multi-select .menu {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        background: #0c121a;
+        border: 1px solid #1f2a3a;
+        border-radius: 10px;
+        z-index: 10;
+        max-height: 240px;
+        overflow: auto;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+      }
+      .multi-select .search {
+        width: 100%;
+        padding: 8px;
+        border: none;
+        border-bottom: 1px solid #1f2a3a;
+        background: #0c121a;
+        color: #e9eef7;
+        border-radius: 10px 10px 0 0;
+      }
+      .multi-select .option {
+        padding: 8px 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+      }
+      .multi-select .option:hover {
+        background: #111827;
+      }
+      .multi-select .option img {
+        width: 36px;
+        height: 36px;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 1px solid #1f2a3a;
+      }
+      .multi-select .check {
+        width: 14px;
+        height: 14px;
+        border: 1px solid #38bdf8;
+        border-radius: 4px;
+        display: inline-block;
+        margin-left: auto;
+        background: transparent;
+      }
+      .multi-select .option.selected .check {
+        background: linear-gradient(135deg, #2dd4bf, #38bdf8);
+      }
+      .panel-nav {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 0 0 12px;
+      }
+      .panel-nav button {
+        margin-top: 0;
+        padding: 8px 12px;
+        border-radius: 10px;
+        border: 1px solid #1f2a3a;
+        background: #0c121a;
+        color: #e9eef7;
+      }
+      .panel-nav button.active {
+        background: linear-gradient(135deg, #2dd4bf, #38bdf8);
+        color: #0b1016;
+        border-color: transparent;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Portfolio Admin</h1>
+        <p class="muted">
+          Manage bilingual content for About, Logo, Categories, Images, and References. English/Turkish text fields are saved together.
+        </p>
+      </header>
+
+      <section id="auth">
+        <h2>Authenticate</h2>
+        <form id="login-form">
+          <label for="password">Admin password (ADMIN_PASSWORD env)</label>
+          <input id="password" name="password" type="password" required />
+          <button type="submit">Login</button>
+        </form>
+        <p id="login-status" class="muted"></p>
+      </section>
+
+      <div class="panel-nav" id="panel-nav">
+        <button data-section="about" class="active" type="button">About</button>
+        <button data-section="logo" type="button">Logo</button>
+        <button data-section="categories" type="button">Categories</button>
+        <button data-section="images" type="button">Images</button>
+        <button data-section="references" type="button">References</button>
+      </div>
+
+      <section id="about" class="panel-section">
+        <h2>About (single type)</h2>
+        <form id="about-form">
+          <div class="grid columns-2">
+            <div>
+              <label for="about-en">About (English)</label>
+              <textarea id="about-en" name="about-en" placeholder="HTML allowed"></textarea>
+            </div>
+            <div>
+              <label for="about-tr">About (Turkish)</label>
+              <textarea id="about-tr" name="about-tr" placeholder="HTML allowed"></textarea>
+            </div>
+          </div>
+          <button type="submit">Save About</button>
+        </form>
+      </section>
+
+      <section id="logo" class="panel-section hidden">
+        <h2>Logo</h2>
+        <form id="logo-form">
+          <label for="logo-file">Upload logo (optional)</label>
+          <input id="logo-file" name="img" type="file" accept="image/*" />
+          <label for="logo-remote">Or remote URL (optional)</label>
+          <input id="logo-remote" name="remoteUrl" type="url" placeholder="https://..." />
+          <div class="grid columns-2">
+            <div>
+              <label for="logo-alt-en">Alt EN</label>
+              <input id="logo-alt-en" name="alt_en" type="text" />
+            </div>
+            <div>
+              <label for="logo-alt-tr">Alt TR</label>
+              <input id="logo-alt-tr" name="alt_tr" type="text" />
+            </div>
+          </div>
+          <button type="submit">Save Logo</button>
+        </form>
+        <div id="logo-preview" class="muted"></div>
+      </section>
+
+      <section id="categories" class="panel-section hidden">
+        <h2>Categories</h2>
+        <form id="category-form">
+          <div class="grid columns-2">
+            <div>
+              <label for="cat-title-en">Title EN</label>
+              <input id="cat-title-en" name="title_en" type="text" required />
+            </div>
+            <div>
+              <label for="cat-title-tr">Title TR</label>
+              <input id="cat-title-tr" name="title_tr" type="text" required />
+            </div>
+          </div>
+          <div class="grid columns-2">
+            <div>
+              <label for="cat-desc-en">Description EN</label>
+              <input id="cat-desc-en" name="description_en" type="text" />
+            </div>
+            <div>
+              <label for="cat-desc-tr">Description TR</label>
+              <input id="cat-desc-tr" name="description_tr" type="text" />
+            </div>
+          </div>
+          <div class="grid columns-2">
+            <div>
+              <label for="cat-position">Position</label>
+              <input id="cat-position" name="position" type="number" value="0" />
+            </div>
+            <div>
+              <label for="cat-active">Active</label>
+              <input id="cat-active" name="is_active" type="checkbox" checked />
+            </div>
+          </div>
+          <div class="row">
+            <button id="cat-submit" type="submit">Create Category</button>
+            <button id="cat-reset" type="button" class="secondary">Reset</button>
+            <button id="cat-delete" type="button" class="secondary danger hidden">Delete</button>
+            <span id="cat-editing" class="muted"></span>
+          </div>
+        </form>
+        <div id="category-list" class="muted"></div>
+      </section>
+
+      <section id="images" class="panel-section hidden">
+        <h2>Images</h2>
+        <p class="muted">Pick relations from the dropdowns below.</p>
+        <form id="image-form" enctype="multipart/form-data">
+          <div class="grid columns-2">
+            <div>
+              <label for="img-title-en">Title EN</label>
+              <input id="img-title-en" name="title_en" type="text" required />
+            </div>
+            <div>
+              <label for="img-title-tr">Title TR</label>
+              <input id="img-title-tr" name="title_tr" type="text" required />
+            </div>
+          </div>
+          <div class="grid columns-2">
+            <div>
+              <label for="img-alt-en">Alt EN</label>
+              <input id="img-alt-en" name="alt_en" type="text" />
+            </div>
+            <div>
+              <label for="img-alt-tr">Alt TR</label>
+              <input id="img-alt-tr" name="alt_tr" type="text" />
+            </div>
+          </div>
+          <div class="grid columns-2">
+            <div>
+              <label for="img-home">Show on home?</label>
+              <input id="img-home" name="home" type="checkbox" />
+            </div>
+          </div>
+          <div class="grid columns-2">
+            <div>
+              <label for="img-pos">Position</label>
+              <input id="img-pos" name="position" type="number" value="0" />
+            </div>
+            <div>
+              <label for="img-file">Upload image</label>
+              <input id="img-file" name="image" type="file" accept="image/*" />
+            </div>
+          </div>
+          <div class="grid columns-2">
+            <div>
+              <label for="img-remote">Or remote URL</label>
+              <input id="img-remote" name="remoteUrl" type="url" placeholder="https://..." />
+            </div>
+            <div>
+              <label>Categories (multi-select)</label>
+              <div id="img-cats-options" class="multi-select" data-type="text"></div>
+            </div>
+          </div>
+          <div class="grid columns-2">
+            <div>
+              <label>References (multi-select)</label>
+              <div id="img-refs-options" class="multi-select" data-type="text"></div>
+            </div>
+          </div>
+          <div id="img-current-preview" class="muted"></div>
+          <div class="row">
+            <button id="img-submit" type="submit">Create Image</button>
+            <button id="img-reset" type="button" class="secondary">Reset</button>
+            <button id="img-delete" type="button" class="secondary danger hidden">Delete</button>
+            <span id="img-editing" class="muted"></span>
+          </div>
+        </form>
+        <div id="image-list" class="muted"></div>
+      </section>
+
+      <section id="references" class="panel-section hidden">
+        <h2>References</h2>
+        <form id="reference-form" enctype="multipart/form-data">
+          <div class="grid columns-2">
+            <div>
+              <label for="ref-title-en">Title EN</label>
+              <input id="ref-title-en" name="title_en" type="text" required />
+            </div>
+            <div>
+              <label for="ref-title-tr">Title TR</label>
+              <input id="ref-title-tr" name="title_tr" type="text" required />
+            </div>
+          </div>
+          <div class="grid columns-2">
+            <div>
+              <label for="ref-desc-en">Description EN</label>
+              <input id="ref-desc-en" name="description_en" type="text" />
+            </div>
+            <div>
+              <label for="ref-desc-tr">Description TR</label>
+              <input id="ref-desc-tr" name="description_tr" type="text" />
+            </div>
+          </div>
+          <div class="grid columns-2">
+            <div>
+              <label for="ref-year">Year</label>
+              <input id="ref-year" name="year" type="text" />
+            </div>
+            <div>
+              <label>Images (multi-select)</label>
+              <div id="ref-images-options" class="multi-select" data-type="image"></div>
+            </div>
+          </div>
+          <div class="grid columns-2">
+            <div>
+              <label for="ref-logo-light">Logo light</label>
+              <input id="ref-logo-light" name="logo_light" type="file" accept="image/*" />
+            </div>
+            <div>
+              <label for="ref-logo-dark">Logo dark</label>
+              <input id="ref-logo-dark" name="logo_dark" type="file" accept="image/*" />
+            </div>
+          </div>
+          <div class="grid columns-2">
+            <div>
+              <label for="ref-remote-light">Or remote light URL</label>
+              <input id="ref-remote-light" name="remoteLogoLight" type="url" />
+            </div>
+            <div>
+              <label for="ref-remote-dark">Or remote dark URL</label>
+              <input id="ref-remote-dark" name="remoteLogoDark" type="url" />
+            </div>
+          </div>
+          <div class="row">
+            <button id="ref-submit" type="submit">Create Reference</button>
+            <button id="ref-reset" type="button" class="secondary">Reset</button>
+            <button id="ref-delete" type="button" class="secondary danger hidden">Delete</button>
+            <span id="ref-editing" class="muted"></span>
+          </div>
+        </form>
+        <div id="reference-list" class="muted"></div>
+      </section>
+    </main>
+
+    <script>
+      const statusEl = document.getElementById("login-status");
+      let token = localStorage.getItem("adminToken") || "";
+      let categoriesCache = [];
+      let imagesCache = [];
+      let referencesCache = [];
+      const multiSelectState = new Map();
+      const toAbsolute = (url) => {
+        if (!url) return "";
+        if (url.startsWith("http")) return url;
+        const base = window.location.origin;
+        return url.startsWith("/") ? base + url : `${base}/${url}`;
+      };
+      const renderMultiSelect = (id) => {
+        const state = multiSelectState.get(id);
+        const el = document.getElementById(id);
+        if (!state || !el) return;
+        const selectedItems = state.items.filter((i) =>
+          state.selected.has(i.id)
+        );
+        const menuOptions = state.items
+          .filter(
+            (i) =>
+              !state.filter ||
+              (i.title || i.id)
+                .toLowerCase()
+                .includes(state.filter.toLowerCase())
+          )
+          .map(
+            (i) => `
+          <div class="option ${state.selected.has(i.id) ? "selected" : ""}" data-id="${i.id}">
+            ${
+              state.type === "image" && i.imageUrl
+                ? `<img src="${toAbsolute(i.imageUrl)}" alt="${i.title || i.id}" />`
+                : ""
+            }
+            <span>${i.title || i.id}</span>
+            <span class="check"></span>
+          </div>`
+          )
+          .join("");
+        el.innerHTML = `
+          <div class="control" data-id="${id}">
+            ${
+              selectedItems.length
+                ? selectedItems
+                    .map(
+                      (i) =>
+                        `<span class="tag" data-id="${i.id}">${i.title || i.id}<button type="button" data-remove="${i.id}">×</button></span>`
+                    )
+                    .join("")
+                : `<span class="placeholder">Select...</span>`
+            }
+          </div>
+          ${
+            state.open
+              ? `<div class="menu">
+                  <input class="search" data-search="${id}" placeholder="Search..." value="${state.filter || ""}" />
+                  ${menuOptions || `<div class="option">No options</div>`}
+                </div>`
+              : ""
+          }
+        `;
+      };
+
+      const buildMultiSelect = (id, items, selectedIds = [], type = "text") => {
+        multiSelectState.set(id, {
+          items,
+          selected: new Set(selectedIds),
+          type,
+          open: false,
+          filter: "",
+        });
+        renderMultiSelect(id);
+      };
+
+      const getMultiSelectValues = (id) => {
+        const state = multiSelectState.get(id);
+        if (!state) return [];
+        return Array.from(state.selected);
+      };
+
+      document.addEventListener("click", (e) => {
+        const control = e.target.closest(".multi-select .control");
+        const option = e.target.closest(".multi-select .option");
+        const remove = e.target.getAttribute("data-remove");
+        const search = e.target.getAttribute("data-search");
+        const dropdown = e.target.closest(".multi-select");
+
+        // Toggle open
+        if (control) {
+          const id = control.getAttribute("data-id");
+          const state = multiSelectState.get(id);
+          if (state) {
+            state.open = !state.open;
+            renderMultiSelect(id);
+          }
+          return;
+        }
+
+        // Option click
+        if (option) {
+          const id = option.closest(".multi-select")?.id;
+          const optId = option.getAttribute("data-id");
+          const state = multiSelectState.get(id);
+          if (state && optId) {
+            if (state.selected.has(optId)) state.selected.delete(optId);
+            else state.selected.add(optId);
+            renderMultiSelect(id);
+          }
+          return;
+        }
+
+        // Remove tag
+        if (remove) {
+          const id = e.target.closest(".multi-select")?.id;
+          const state = multiSelectState.get(id);
+          if (state) {
+            state.selected.delete(remove);
+            renderMultiSelect(id);
+          }
+          return;
+        }
+
+        // Search input typing handled below (input event)
+
+        // Click outside: close menus
+        if (!dropdown) {
+          multiSelectState.forEach((state, id) => {
+            if (state.open) {
+              state.open = false;
+              renderMultiSelect(id);
+            }
+          });
+        }
+      });
+
+      document.addEventListener("input", (e) => {
+        const searchId = e.target.getAttribute("data-search");
+        if (searchId) {
+          const state = multiSelectState.get(searchId);
+          if (state) {
+            state.filter = e.target.value || "";
+            state.open = true;
+            renderMultiSelect(searchId);
+          }
+        }
+      });
+
+      const withAuth = (headers = {}) =>
+        token ? { ...headers, Authorization: "Bearer " + token } : headers;
+
+      const showMessage = (el, message) => {
+        el.textContent = message;
+        setTimeout(() => (el.textContent = ""), 4000);
+      };
+
+      const loginForm = document.getElementById("login-form");
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const password = document.getElementById("password").value;
+        const res = await fetch("/admin/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password }),
+        });
+        if (!res.ok) {
+          showMessage(statusEl, "Login failed");
+          return;
+        }
+        const json = await res.json();
+        token = json.token;
+        localStorage.setItem("adminToken", token);
+        showMessage(statusEl, "Logged in");
+        refreshData();
+      });
+
+      async function refreshData() {
+        await Promise.all([
+          loadAbout(),
+          loadLogo(),
+          loadCategories(),
+          loadImages(),
+          loadReferences(),
+        ]);
+      }
+      const sections = ["about", "logo", "categories", "images", "references"];
+      function setSection(section) {
+        sections.forEach((id) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          if (id === section) {
+            el.classList.remove("hidden");
+          } else {
+            el.classList.add("hidden");
+          }
+          const btn = document.querySelector(`[data-section="${id}"]`);
+          if (btn) {
+            btn.classList.toggle("active", id === section);
+          }
+        });
+      }
+      document.getElementById("panel-nav").addEventListener("click", (e) => {
+        const section = e.target.getAttribute("data-section");
+        if (section) {
+          setSection(section);
+        }
+      });
+
+      async function loadAbout() {
+        const res = await fetch("/api/about");
+        const json = await res.json();
+        document.getElementById("about-en").value =
+          json.data.translations?.en || "";
+        document.getElementById("about-tr").value =
+          json.data.translations?.tr || "";
+      }
+
+      async function loadLogo() {
+        const res = await fetch("/api/logo");
+        const json = await res.json();
+        const preview = document.getElementById("logo-preview");
+        const url = json.data?.img?.url;
+        preview.textContent = url
+          ? "Current: " + url
+          : "No logo uploaded yet";
+      }
+
+      // About helpers
+      const aboutForm = document.getElementById("about-form");
+      aboutForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const payload = {
+          translations: {
+            en: document.getElementById("about-en").value,
+            tr: document.getElementById("about-tr").value,
+          },
+        };
+        const res = await fetch("/admin/about", {
+          method: "PUT",
+          headers: withAuth({ "Content-Type": "application/json" }),
+          body: JSON.stringify(payload),
+        });
+        showMessage(statusEl, res.ok ? "About saved" : "About save failed");
+        if (res.ok) {
+          loadAbout();
+        }
+      });
+
+      // Logo helpers
+      const logoForm = document.getElementById("logo-form");
+      logoForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(logoForm);
+        const res = await fetch("/admin/logo", {
+          method: "POST",
+          headers: withAuth(),
+          body: formData,
+        });
+        showMessage(statusEl, res.ok ? "Logo saved" : "Logo save failed");
+        if (res.ok) {
+          logoForm.reset();
+          loadLogo();
+        }
+      });
+
+      async function loadCategories() {
+        const res = await fetch("/api/categories");
+        const json = await res.json();
+        categoriesCache = json.data;
+        const list = document.getElementById("category-list");
+        list.innerHTML = "";
+        json.data.forEach((cat) => {
+          const div = document.createElement("div");
+          div.className = "pill";
+          div.dataset.id = cat.id;
+          div.innerHTML = `<strong>${cat.Title}</strong> <code>${cat.id}</code> - pos ${cat.position}`;
+          div.title = "Click to edit";
+          div.addEventListener("click", () => setCategoryForm(cat));
+          list.appendChild(div);
+        });
+        // refresh category multiselect in image form
+        const selectedCats = getMultiSelectValues("img-cats-options");
+        buildMultiSelect(
+          "img-cats-options",
+          categoriesCache.map((c) => ({ id: c.id, title: c.Title })),
+          selectedCats,
+          "text"
+        );
+      }
+
+      async function loadImages() {
+        const res = await fetch("/api/images");
+        const json = await res.json();
+        imagesCache = json.data;
+        const list = document.getElementById("image-list");
+        list.className = "thumb-grid";
+        list.innerHTML = "";
+        json.data.forEach((img) => {
+          const card = document.createElement("div");
+          card.className = "thumb-card";
+          card.dataset.id = img.id;
+          card.title = "Click to edit";
+          card.addEventListener("click", () => setImageForm(img));
+          if (img.image?.url) {
+            const el = document.createElement("img");
+            el.src = toAbsolute(img.image.url);
+            el.alt = img.alt || img.Title || "Image";
+            card.appendChild(el);
+          }
+          const meta = document.createElement("div");
+          meta.className = "thumb-meta";
+          const homeTag = img.home ? " • home" : "";
+          meta.innerHTML = `<div><strong>${img.Title || "Untitled"}</strong></div><div class="muted">id: ${img.id}${homeTag}</div>`;
+          card.appendChild(meta);
+          list.appendChild(card);
+        });
+        // refresh image multiselect in reference form
+        const selectedImageIds = getMultiSelectValues("ref-images-options");
+        buildMultiSelect(
+          "ref-images-options",
+          imagesCache.map((img) => ({
+            id: img.id,
+            title: img.Title || "Untitled",
+            imageUrl: img.image?.url,
+          })),
+          selectedImageIds,
+          "image"
+        );
+      }
+
+      async function loadReferences() {
+        const res = await fetch("/api/references");
+        const json = await res.json();
+        referencesCache = json.data;
+        const list = document.getElementById("reference-list");
+        list.innerHTML = "";
+        json.data.forEach((ref) => {
+          const div = document.createElement("div");
+          div.className = "pill";
+          div.dataset.id = ref.id;
+          const yearTag = ref.year ? " - " + ref.year : "";
+          div.innerHTML = `<strong>${ref.title}</strong> <code>${ref.id}</code>${yearTag}`;
+          div.title = "Click to edit";
+          div.addEventListener("click", () => setReferenceForm(ref));
+          list.appendChild(div);
+        });
+        const selectedRefs = getMultiSelectValues("img-refs-options");
+        buildMultiSelect(
+          "img-refs-options",
+          referencesCache.map((r) => ({ id: r.id, title: r.title })),
+          selectedRefs,
+          "text"
+        );
+      }
+
+      // Category helpers
+      const catForm = document.getElementById("category-form");
+      const catEditing = document.getElementById("cat-editing");
+      const catDelete = document.getElementById("cat-delete");
+      document
+        .getElementById("cat-reset")
+        .addEventListener("click", resetCategoryForm);
+      catDelete.addEventListener("click", async () => {
+        const id = catForm.dataset.editId;
+        if (!id) return;
+        await fetch(`/admin/categories/${id}`, {
+          method: "DELETE",
+          headers: withAuth(),
+        });
+        resetCategoryForm();
+        loadCategories();
+        loadImages();
+      });
+
+      function resetCategoryForm() {
+        catForm.reset();
+        catForm.dataset.editId = "";
+        document.getElementById("cat-position").value = 0;
+        document.getElementById("cat-active").checked = true;
+        document.getElementById("cat-submit").textContent = "Create Category";
+        catEditing.textContent = "";
+        catDelete.classList.add("hidden");
+      }
+
+      function setCategoryForm(cat) {
+        document.getElementById("cat-title-en").value =
+          cat.translations?.en || "";
+        document.getElementById("cat-title-tr").value =
+          cat.translations?.tr || "";
+        document.getElementById("cat-desc-en").value =
+          cat.description?.en || cat.Description || "";
+        document.getElementById("cat-desc-tr").value =
+          cat.description?.tr || "";
+        document.getElementById("cat-position").value = cat.position ?? 0;
+        document.getElementById("cat-active").checked = !!cat.is_active;
+        catForm.dataset.editId = cat.id;
+        document.getElementById("cat-submit").textContent = "Update Category";
+        catEditing.textContent = `Editing ${cat.id}`;
+        catDelete.classList.remove("hidden");
+      }
+
+      catForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const editId = catForm.dataset.editId;
+        const payload = {
+          title: {
+            en: document.getElementById("cat-title-en").value,
+            tr: document.getElementById("cat-title-tr").value,
+          },
+          description: {
+            en: document.getElementById("cat-desc-en").value,
+            tr: document.getElementById("cat-desc-tr").value,
+          },
+          position: Number(document.getElementById("cat-position").value || 0),
+          is_active: document.getElementById("cat-active").checked,
+        };
+        const url = editId
+          ? `/admin/categories/${editId}`
+          : "/admin/categories";
+        const method = editId ? "PATCH" : "POST";
+        const res = await fetch(url, {
+          method,
+          headers: withAuth({ "Content-Type": "application/json" }),
+          body: JSON.stringify(payload),
+        });
+        showMessage(statusEl, res.ok ? "Category saved" : "Category save failed");
+        if (res.ok) {
+          resetCategoryForm();
+          loadCategories();
+        }
+      });
+
+      // Image helpers
+      const imgForm = document.getElementById("image-form");
+      const imgEditing = document.getElementById("img-editing");
+      const imgDelete = document.getElementById("img-delete");
+      document
+        .getElementById("img-reset")
+        .addEventListener("click", resetImageForm);
+      imgDelete.addEventListener("click", async () => {
+        const id = imgForm.dataset.editId;
+        if (!id) return;
+        await fetch(`/admin/images/${id}`, {
+          method: "DELETE",
+          headers: withAuth(),
+        });
+        resetImageForm();
+        loadImages();
+        loadReferences();
+      });
+
+      function resetImageForm() {
+        imgForm.reset();
+        imgForm.dataset.editId = "";
+        document.getElementById("img-pos").value = 0;
+        document.getElementById("img-submit").textContent = "Create Image";
+        imgEditing.textContent = "";
+        const preview = document.getElementById("img-current-preview");
+        if (preview) preview.innerHTML = "";
+        buildMultiSelect(
+          "img-cats-options",
+          categoriesCache.map((c) => ({ id: c.id, title: c.Title })),
+          [],
+          "text"
+        );
+        buildMultiSelect(
+          "img-refs-options",
+          referencesCache.map((r) => ({ id: r.id, title: r.title })),
+          [],
+          "text"
+        );
+        imgDelete.classList.add("hidden");
+      }
+
+      function setImageForm(img) {
+        document.getElementById("img-title-en").value =
+          img.translations?.title?.en || img.Title || "";
+        document.getElementById("img-title-tr").value =
+          img.translations?.title?.tr || "";
+        document.getElementById("img-alt-en").value =
+          img.translations?.alt?.en || img.alt || "";
+        document.getElementById("img-alt-tr").value =
+          img.translations?.alt?.tr || "";
+        document.getElementById("img-home").checked = !!img.home;
+        document.getElementById("img-pos").value = img.position ?? 0;
+        imgForm.dataset.editId = img.id;
+        document.getElementById("img-submit").textContent = "Update Image";
+        imgEditing.textContent = `Editing ${img.id}`;
+        const preview = document.getElementById("img-current-preview");
+        const previewUrl = img.image?.url ? toAbsolute(img.image.url) : "";
+        if (preview) {
+          preview.innerHTML = previewUrl
+            ? `<p class="muted">Current image:</p><img class="thumb-inline" src="${previewUrl}" alt="${img.alt || img.Title || "Image"}" />`
+            : "No image uploaded";
+        }
+        const catSelected = (img.categories || [])
+          .map((c) => c.id || c.documentId || "")
+          .filter(Boolean);
+        const refSelected = (img.references || [])
+          .map((r) => r.id || r.documentId || "")
+          .filter(Boolean);
+        buildMultiSelect(
+          "img-cats-options",
+          categoriesCache.map((c) => ({ id: c.id, title: c.Title })),
+          catSelected,
+          "text"
+        );
+        buildMultiSelect(
+          "img-refs-options",
+          referencesCache.map((r) => ({ id: r.id, title: r.title })),
+          refSelected,
+          "text"
+        );
+        imgDelete.classList.remove("hidden");
+      }
+
+      imgForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        formData.set("home", document.getElementById("img-home").checked);
+        const catIds = getMultiSelectValues("img-cats-options");
+        const refIds = getMultiSelectValues("img-refs-options");
+        formData.set("categories", catIds.join(","));
+        formData.set("references", refIds.join(","));
+        const editId = imgForm.dataset.editId;
+        const url = editId ? `/admin/images/${editId}` : "/admin/images";
+        const method = editId ? "PATCH" : "POST";
+        const res = await fetch(url, {
+          method,
+          headers: withAuth(),
+          body: formData,
+        });
+        showMessage(statusEl, res.ok ? "Image saved" : "Image save failed");
+        if (res.ok) {
+          resetImageForm();
+          loadImages();
+        }
+      });
+
+      // Reference helpers
+      const refForm = document.getElementById("reference-form");
+      const refEditing = document.getElementById("ref-editing");
+      document
+        .getElementById("ref-reset")
+        .addEventListener("click", resetReferenceForm);
+
+      function resetReferenceForm() {
+        refForm.reset();
+        refForm.dataset.editId = "";
+        document.getElementById("ref-submit").textContent = "Create Reference";
+        refEditing.textContent = "";
+        refDelete.classList.add("hidden");
+        buildMultiSelect(
+          "ref-images-options",
+          imagesCache.map((img) => ({
+            id: img.id,
+            title: img.Title || "Untitled",
+            imageUrl: img.image?.url,
+          })),
+          [],
+          "image"
+        );
+      }
+
+      function setReferenceForm(ref) {
+        document.getElementById("ref-title-en").value =
+          ref.translations?.title?.en || ref.title || "";
+        document.getElementById("ref-title-tr").value =
+          ref.translations?.title?.tr || "";
+        document.getElementById("ref-desc-en").value =
+          ref.translations?.description?.en || ref.description || "";
+        document.getElementById("ref-desc-tr").value =
+          ref.translations?.description?.tr || "";
+        document.getElementById("ref-year").value = ref.year || "";
+        refForm.dataset.editId = ref.id;
+        document.getElementById("ref-submit").textContent = "Update Reference";
+        refEditing.textContent = `Editing ${ref.id}`;
+        refDelete.classList.remove("hidden");
+        const selectedImageIds = (ref.images || [])
+          .map((i) => i.id || i.documentId || "")
+          .filter(Boolean);
+        buildMultiSelect(
+          "ref-images-options",
+          imagesCache.map((img) => ({
+            id: img.id,
+            title: img.Title || "Untitled",
+            imageUrl: img.image?.url,
+          })),
+          selectedImageIds,
+          "image"
+        );
+      }
+
+      refForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const imageIds = getMultiSelectValues("ref-images-options");
+        formData.set("images", imageIds.join(","));
+        const editId = refForm.dataset.editId;
+        const url = editId
+          ? `/admin/references/${editId}`
+          : "/admin/references";
+        const method = editId ? "PATCH" : "POST";
+        const res = await fetch(url, {
+          method,
+          headers: withAuth(),
+          body: formData,
+        });
+        showMessage(
+          statusEl,
+          res.ok ? "Reference saved" : "Reference save failed"
+        );
+        if (res.ok) {
+          resetReferenceForm();
+          loadReferences();
+        }
+      });
+
+      // Preload data if token already present
+      if (token) {
+        statusEl.textContent = "Using saved session token.";
+        refreshData();
+      } else {
+        loadAbout();
+        loadLogo();
+        loadCategories();
+      }
+      setSection("about");
+    </script>
+  </body>
+</html>
