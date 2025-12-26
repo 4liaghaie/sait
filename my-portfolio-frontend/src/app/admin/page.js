@@ -1,13 +1,7 @@
-
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -61,7 +55,15 @@ export default function AdminPage() {
   const [references, setReferences] = useState([]);
   const [translations, setTranslations] = useState("");
 
-  const [catForm, setCatForm] = useState({ id: "", title_en: "", title_tr: "", description_en: "", description_tr: "", position: 0, active: true });
+  const [catForm, setCatForm] = useState({
+    id: "",
+    title_en: "",
+    title_tr: "",
+    description_en: "",
+    description_tr: "",
+    position: 0,
+    active: true,
+  });
   const [imgForm, setImgForm] = useState({
     id: "",
     title: "",
@@ -149,7 +151,8 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    const stored = typeof window !== "undefined" ? localStorage.getItem("adminToken") : "";
+    const stored =
+      typeof window !== "undefined" ? localStorage.getItem("adminToken") : "";
     if (stored) setToken(stored);
     loadAbout();
     loadLogo();
@@ -163,13 +166,14 @@ export default function AdminPage() {
     e.preventDefault();
     const password = new FormData(e.target).get("password") || "";
     try {
-      const json = await fetchJson(apiUrl("/admin/login"), {
+      const json = await fetchJson(apiUrl("/api/admin/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
       });
       setToken(json.token);
-      if (typeof window !== "undefined") localStorage.setItem("adminToken", json.token);
+      if (typeof window !== "undefined")
+        localStorage.setItem("adminToken", json.token);
       showStatus("Logged in");
       loadAll();
     } catch (err) {
@@ -220,7 +224,15 @@ export default function AdminPage() {
       body: JSON.stringify(payload),
     });
     showStatus("Category saved");
-    setCatForm({ id: "", title_en: "", title_tr: "", description_en: "", description_tr: "", position: 0, active: true });
+    setCatForm({
+      id: "",
+      title_en: "",
+      title_tr: "",
+      description_en: "",
+      description_tr: "",
+      position: 0,
+      active: true,
+    });
     loadCategories();
     loadImages();
   };
@@ -232,7 +244,15 @@ export default function AdminPage() {
       headers: authedHeaders,
     });
     showStatus("Category deleted");
-    setCatForm({ id: "", title_en: "", title_tr: "", description_en: "", description_tr: "", position: 0, active: true });
+    setCatForm({
+      id: "",
+      title_en: "",
+      title_tr: "",
+      description_en: "",
+      description_tr: "",
+      position: 0,
+      active: true,
+    });
     loadCategories();
     loadImages();
   };
@@ -281,8 +301,10 @@ export default function AdminPage() {
     fd.append("images", (refForm.imageIds || []).join(","));
     if (refForm.logoLightFile) fd.append("logo_light", refForm.logoLightFile);
     if (refForm.logoDarkFile) fd.append("logo_dark", refForm.logoDarkFile);
-    if (refForm.remoteLogoLight) fd.append("remoteLogoLight", refForm.remoteLogoLight);
-    if (refForm.remoteLogoDark) fd.append("remoteLogoDark", refForm.remoteLogoDark);
+    if (refForm.remoteLogoLight)
+      fd.append("remoteLogoLight", refForm.remoteLogoLight);
+    if (refForm.remoteLogoDark)
+      fd.append("remoteLogoDark", refForm.remoteLogoDark);
     const url = refForm.id
       ? apiUrl(`/admin/references/${refForm.id}`)
       : apiUrl("/admin/references");
@@ -325,10 +347,14 @@ export default function AdminPage() {
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div>
             <h1 className="text-3xl font-semibold">Admin Console</h1>
-            <p className="text-muted-foreground">Authenticate to manage content.</p>
+            <p className="text-muted-foreground">
+              Authenticate to manage content.
+            </p>
           </div>
           {status ? (
-            <Badge variant="outline" className="text-xs">{status}</Badge>
+            <Badge variant="outline" className="text-xs">
+              {status}
+            </Badge>
           ) : null}
         </div>
         <Tabs defaultValue="login" className="space-y-4">
@@ -336,7 +362,10 @@ export default function AdminPage() {
             <TabsTrigger value="login">Access</TabsTrigger>
           </TabsList>
           <TabsContent value="login">
-            <Section title="Authenticate" description="Enter ADMIN_PASSWORD to unlock edits.">
+            <Section
+              title="Authenticate"
+              description="Enter ADMIN_PASSWORD to unlock edits."
+            >
               <form className="space-y-3" onSubmit={handleLogin}>
                 <div className="grid gap-2 md:w-96">
                   <Label>Password</Label>
@@ -376,7 +405,18 @@ export default function AdminPage() {
           <TabsTrigger value="references">References</TabsTrigger>
           <TabsTrigger value="translations">Translations</TabsTrigger>
           <span className="flex-1" />
-          <Button variant="outline" size="sm" onClick={() => { setToken(""); if (typeof window !== "undefined") localStorage.removeItem("adminToken"); showStatus("Logged out"); }}>Logout</Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setToken("");
+              if (typeof window !== "undefined")
+                localStorage.removeItem("adminToken");
+              showStatus("Logged out");
+            }}
+          >
+            Logout
+          </Button>
         </TabsList>
 
         <TabsContent value="about">
@@ -394,22 +434,40 @@ export default function AdminPage() {
                 onChange={(e) => setAboutTr(e.target.value)}
                 className="min-h-[120px]"
               />
-              <Button onClick={saveAbout} disabled={!token}>Save About</Button>
+              <Button onClick={saveAbout} disabled={!token}>
+                Save About
+              </Button>
             </div>
           </Section>
         </TabsContent>
 
         <TabsContent value="logo">
-          <Section title="Logo" description="Upload or link a logo (light/dark handled together).">
+          <Section
+            title="Logo"
+            description="Upload or link a logo (light/dark handled together)."
+          >
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-3">
                 <Label>Upload file</Label>
-                <Input type="file" accept="image/*" onChange={(e) => setLogoFile(e.target.files?.[0] || null)} />
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setLogoFile(e.target.files?.[0] || null)}
+                />
                 <Label>Or remote URL</Label>
-                <Input value={logoRemote} onChange={(e) => setLogoRemote(e.target.value)} placeholder="https://..." />
+                <Input
+                  value={logoRemote}
+                  onChange={(e) => setLogoRemote(e.target.value)}
+                  placeholder="https://..."
+                />
                 <Label>Alt text</Label>
-                <Input value={logoAlt} onChange={(e) => setLogoAlt(e.target.value)} />
-                <Button onClick={saveLogo} disabled={!token}>Save Logo</Button>
+                <Input
+                  value={logoAlt}
+                  onChange={(e) => setLogoAlt(e.target.value)}
+                />
+                <Button onClick={saveLogo} disabled={!token}>
+                  Save Logo
+                </Button>
               </div>
               <div className="flex flex-col gap-3">
                 <Label>Current</Label>
@@ -436,18 +494,38 @@ export default function AdminPage() {
               <div className="grid gap-3 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label>Title (EN)</Label>
-                  <Input value={catForm.title_en} onChange={(e) => setCatForm((f) => ({ ...f, title_en: e.target.value }))} />
+                  <Input
+                    value={catForm.title_en}
+                    onChange={(e) =>
+                      setCatForm((f) => ({ ...f, title_en: e.target.value }))
+                    }
+                  />
                   <Label>Title (TR)</Label>
-                  <Input value={catForm.title_tr} onChange={(e) => setCatForm((f) => ({ ...f, title_tr: e.target.value }))} />
+                  <Input
+                    value={catForm.title_tr}
+                    onChange={(e) =>
+                      setCatForm((f) => ({ ...f, title_tr: e.target.value }))
+                    }
+                  />
                   <Label>Description (EN)</Label>
                   <Input
                     value={catForm.description_en}
-                    onChange={(e) => setCatForm((f) => ({ ...f, description_en: e.target.value }))}
+                    onChange={(e) =>
+                      setCatForm((f) => ({
+                        ...f,
+                        description_en: e.target.value,
+                      }))
+                    }
                   />
                   <Label>Description (TR)</Label>
                   <Input
                     value={catForm.description_tr}
-                    onChange={(e) => setCatForm((f) => ({ ...f, description_tr: e.target.value }))}
+                    onChange={(e) =>
+                      setCatForm((f) => ({
+                        ...f,
+                        description_tr: e.target.value,
+                      }))
+                    }
                   />
                 </div>
                 <div className="space-y-2">
@@ -455,12 +533,16 @@ export default function AdminPage() {
                   <Input
                     type="number"
                     value={catForm.position}
-                    onChange={(e) => setCatForm((f) => ({ ...f, position: e.target.value }))}
+                    onChange={(e) =>
+                      setCatForm((f) => ({ ...f, position: e.target.value }))
+                    }
                   />
                   <div className="flex items-center gap-2 pt-2">
                     <Switch
                       checked={catForm.active}
-                      onCheckedChange={(v) => setCatForm((f) => ({ ...f, active: v }))}
+                      onCheckedChange={(v) =>
+                        setCatForm((f) => ({ ...f, active: v }))
+                      }
                     />
                     <Label className="text-sm">Active</Label>
                   </div>
@@ -471,14 +553,26 @@ export default function AdminPage() {
                   {catForm.id ? "Update" : "Create"} Category
                 </Button>
                 {catForm.id ? (
-                  <Button variant="destructive" onClick={deleteCategory} disabled={!token}>
+                  <Button
+                    variant="destructive"
+                    onClick={deleteCategory}
+                    disabled={!token}
+                  >
                     Delete
                   </Button>
                 ) : null}
                 <Button
                   variant="secondary"
                   onClick={() =>
-                    setCatForm({ id: "", title_en: "", title_tr: "", description_en: "", description_tr: "", position: 0, active: true })
+                    setCatForm({
+                      id: "",
+                      title_en: "",
+                      title_tr: "",
+                      description_en: "",
+                      description_tr: "",
+                      position: 0,
+                      active: true,
+                    })
                   }
                 >
                   Reset
@@ -496,9 +590,13 @@ export default function AdminPage() {
                     if (!found) return;
                     setCatForm({
                       id: found.id,
-                      title_en: found.translations?.title?.en || found.Title || "",
+                      title_en:
+                        found.translations?.title?.en || found.Title || "",
                       title_tr: found.translations?.title?.tr || "",
-                      description_en: found.translations?.description?.en || found.Description || "",
+                      description_en:
+                        found.translations?.description?.en ||
+                        found.Description ||
+                        "",
                       description_tr: found.translations?.description?.tr || "",
                       position: found.position ?? 0,
                       active: !!found.is_active,
@@ -518,21 +616,39 @@ export default function AdminPage() {
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-3">
                 <Label>Title</Label>
-                <Input value={imgForm.title} onChange={(e) => setImgForm((f) => ({ ...f, title: e.target.value }))} />
+                <Input
+                  value={imgForm.title}
+                  onChange={(e) =>
+                    setImgForm((f) => ({ ...f, title: e.target.value }))
+                  }
+                />
                 <Label>Alt</Label>
-                <Input value={imgForm.alt} onChange={(e) => setImgForm((f) => ({ ...f, alt: e.target.value }))} />
+                <Input
+                  value={imgForm.alt}
+                  onChange={(e) =>
+                    setImgForm((f) => ({ ...f, alt: e.target.value }))
+                  }
+                />
                 <Label>Remote URL (optional)</Label>
                 <Input
                   value={imgForm.remoteUrl}
-                  onChange={(e) => setImgForm((f) => ({ ...f, remoteUrl: e.target.value }))}
+                  onChange={(e) =>
+                    setImgForm((f) => ({ ...f, remoteUrl: e.target.value }))
+                  }
                   placeholder="https://..."
                 />
                 <Label>Upload file</Label>
-                <Input type="file" accept="image/*" onChange={(e) => setImgFile(e.target.files?.[0] || null)} />
-                                <div className="flex items-center gap-2">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setImgFile(e.target.files?.[0] || null)}
+                />
+                <div className="flex items-center gap-2">
                   <Switch
                     checked={imgForm.home}
-                    onCheckedChange={(v) => setImgForm((f) => ({ ...f, home: v }))}
+                    onCheckedChange={(v) =>
+                      setImgForm((f) => ({ ...f, home: v }))
+                    }
                   />
                   <Label>Show on home</Label>
                 </div>
@@ -611,22 +727,31 @@ export default function AdminPage() {
                 </div>
               </div>
               <div className="space-y-3">
-                <Label className="text-sm">Existing images (click to edit)</Label>
+                <Label className="text-sm">
+                  Existing images (click to edit)
+                </Label>
                 <ScrollArea className="h-[340px] rounded-md border border-border/60 p-3 space-y-3">
                   {(images || []).map((img) => (
                     <Card
                       key={img.id}
-                      className={`cursor-pointer ${img.id === imgForm.id ? "ring-2 ring-primary" : ""}`}
+                      className={`cursor-pointer ${
+                        img.id === imgForm.id ? "ring-2 ring-primary" : ""
+                      }`}
                       onClick={() =>
                         setImgForm({
                           id: img.id,
-                          title_en: img.translations?.title?.en || img.Title || "",
+                          title_en:
+                            img.translations?.title?.en || img.Title || "",
                           title: img.Title || "",
                           alt: img.alt || "",
                           home: !!img.home,
                           remoteUrl: "",
-                          categoryIds: (img.categories || []).map((c) => c.id || c.documentId || ""),
-                          referenceIds: (img.references || []).map((r) => r.id || r.documentId || ""),
+                          categoryIds: (img.categories || []).map(
+                            (c) => c.id || c.documentId || ""
+                          ),
+                          referenceIds: (img.references || []).map(
+                            (r) => r.id || r.documentId || ""
+                          ),
                         })
                       }
                     >
@@ -641,10 +766,13 @@ export default function AdminPage() {
                           <div className="h-14 w-14 rounded-md bg-muted" />
                         )}
                         <div className="flex-1">
-                          <p className="font-medium">{img.Title || "Untitled"}</p>
-                          
+                          <p className="font-medium">
+                            {img.Title || "Untitled"}
+                          </p>
                         </div>
-                        {img.home ? <Badge variant="secondary">Home</Badge> : null}
+                        {img.home ? (
+                          <Badge variant="secondary">Home</Badge>
+                        ) : null}
                       </CardContent>
                     </Card>
                   ))}
@@ -662,21 +790,46 @@ export default function AdminPage() {
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-3">
                 <Label>Title (EN)</Label>
-                <Input value={refForm.title_en} onChange={(e) => setRefForm((f) => ({ ...f, title_en: e.target.value }))} />
+                <Input
+                  value={refForm.title_en}
+                  onChange={(e) =>
+                    setRefForm((f) => ({ ...f, title_en: e.target.value }))
+                  }
+                />
                 <Label>Title (TR)</Label>
-                <Input value={refForm.title_tr} onChange={(e) => setRefForm((f) => ({ ...f, title_tr: e.target.value }))} />
+                <Input
+                  value={refForm.title_tr}
+                  onChange={(e) =>
+                    setRefForm((f) => ({ ...f, title_tr: e.target.value }))
+                  }
+                />
                 <Label>Description (EN)</Label>
                 <Input
                   value={refForm.description_en}
-                  onChange={(e) => setRefForm((f) => ({ ...f, description_en: e.target.value }))}
+                  onChange={(e) =>
+                    setRefForm((f) => ({
+                      ...f,
+                      description_en: e.target.value,
+                    }))
+                  }
                 />
                 <Label>Description (TR)</Label>
                 <Input
                   value={refForm.description_tr}
-                  onChange={(e) => setRefForm((f) => ({ ...f, description_tr: e.target.value }))}
+                  onChange={(e) =>
+                    setRefForm((f) => ({
+                      ...f,
+                      description_tr: e.target.value,
+                    }))
+                  }
                 />
                 <Label>Year</Label>
-                <Input value={refForm.year} onChange={(e) => setRefForm((f) => ({ ...f, year: e.target.value }))} />
+                <Input
+                  value={refForm.year}
+                  onChange={(e) =>
+                    setRefForm((f) => ({ ...f, year: e.target.value }))
+                  }
+                />
                 <Label>Images</Label>
                 <div className="flex flex-wrap gap-2">
                   {(images || []).map((img) => {
@@ -706,7 +859,10 @@ export default function AdminPage() {
                   type="file"
                   accept="image/*"
                   onChange={(e) =>
-                    setRefForm((f) => ({ ...f, logoLightFile: e.target.files?.[0] || null }))
+                    setRefForm((f) => ({
+                      ...f,
+                      logoLightFile: e.target.files?.[0] || null,
+                    }))
                   }
                 />
                 <Label>Logo dark file</Label>
@@ -714,19 +870,32 @@ export default function AdminPage() {
                   type="file"
                   accept="image/*"
                   onChange={(e) =>
-                    setRefForm((f) => ({ ...f, logoDarkFile: e.target.files?.[0] || null }))
+                    setRefForm((f) => ({
+                      ...f,
+                      logoDarkFile: e.target.files?.[0] || null,
+                    }))
                   }
                 />
                 <Label>Logo light URL</Label>
                 <Input
                   value={refForm.remoteLogoLight}
-                  onChange={(e) => setRefForm((f) => ({ ...f, remoteLogoLight: e.target.value }))}
+                  onChange={(e) =>
+                    setRefForm((f) => ({
+                      ...f,
+                      remoteLogoLight: e.target.value,
+                    }))
+                  }
                   placeholder="https://..."
                 />
                 <Label>Logo dark URL</Label>
                 <Input
                   value={refForm.remoteLogoDark}
-                  onChange={(e) => setRefForm((f) => ({ ...f, remoteLogoDark: e.target.value }))}
+                  onChange={(e) =>
+                    setRefForm((f) => ({
+                      ...f,
+                      remoteLogoDark: e.target.value,
+                    }))
+                  }
                   placeholder="https://..."
                 />
                 <div className="flex gap-3">
@@ -759,14 +928,18 @@ export default function AdminPage() {
                   {(references || []).map((ref) => (
                     <Card
                       key={ref.id}
-                      className={`cursor-pointer ${ref.id === refForm.id ? "ring-2 ring-primary" : ""}`}
+                      className={`cursor-pointer ${
+                        ref.id === refForm.id ? "ring-2 ring-primary" : ""
+                      }`}
                       onClick={() =>
                         setRefForm({
                           id: ref.id,
                           title: ref.title || "",
                           description: ref.description || "",
                           year: ref.year || "",
-                          imageIds: (ref.images || []).map((i) => i.id || i.documentId || ""),
+                          imageIds: (ref.images || []).map(
+                            (i) => i.id || i.documentId || ""
+                          ),
                           remoteLogoLight: "",
                           remoteLogoDark: "",
                         })
@@ -774,8 +947,12 @@ export default function AdminPage() {
                     >
                       <CardContent className="flex items-center gap-3 p-3">
                         <div className="flex-1">
-                          <p className="font-medium">{ref.title || "Untitled"}</p>
-                          <p className="text-xs text-muted-foreground">{ref.year}</p>
+                          <p className="font-medium">
+                            {ref.title || "Untitled"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {ref.year}
+                          </p>
                         </div>
                       </CardContent>
                     </Card>
