@@ -701,6 +701,22 @@ export default function AdminPage() {
                     );
                   })}
                 </div>
+                <Label>Logo light file</Label>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setRefForm((f) => ({ ...f, logoLightFile: e.target.files?.[0] || null }))
+                  }
+                />
+                <Label>Logo dark file</Label>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setRefForm((f) => ({ ...f, logoDarkFile: e.target.files?.[0] || null }))
+                  }
+                />
                 <Label>Logo light URL</Label>
                 <Input
                   value={refForm.remoteLogoLight}
