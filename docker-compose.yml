@@ -4,48 +4,28 @@ services:
     environment:
       - PORT=4000
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-change-me}
-      - BASE_URL=${BASE_URL:-https://yourdomain.com}
+      - BASE_URL=${BASE_URL:-https://muhsinzade.com}
       - UPLOAD_DIR=/app/uploads
     volumes:
       - backend-data:/app/data
       - backend-uploads:/app/uploads
-    expose:
-      - "4000"
+    ports:
+      - "127.0.0.1:4000:4000"
     restart: unless-stopped
 
   frontend:
     build:
       context: ./my-portfolio-frontend
       args:
-        # IMPORTANT: for server-side calls inside Docker, use the backend service name
-        NEXT_PUBLIC_API_BASE: ${NEXT_PUBLIC_API_BASE_INTERNAL:-http://backend:4000}
+        # for browser, use nginx path
+        NEXT_PUBLIC_API_BASE: ${NEXT_PUBLIC_API_BASE_PUBLIC:-/api}
     environment:
-      # IMPORTANT:
-      # - Server-side code in the container can use http://backend:4000
-      # - Browser-side code must use public URL (through nginx): https://yourdomain.com/api
-      #
-      # If your frontend only uses NEXT_PUBLIC_API_BASE in the browser, set it to public:
       - NEXT_PUBLIC_API_BASE=${NEXT_PUBLIC_API_BASE_PUBLIC:-/api}
-      # If your code also needs an internal base for SSR/server-actions, use a second variable
-      - INTERNAL_API_BASE=${NEXT_PUBLIC_API_BASE_INTERNAL:-http://backend:4000}
       - NODE_ENV=production
     depends_on:
       - backend
-    expose:
-      - "3000"
-    restart: unless-stopped
-
-  nginx:
-    image: nginx:1.27-alpine
-    depends_on:
-      - frontend
-      - backend
     ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
-      - ./nginx/certs:/etc/nginx/certs:ro
+      - "127.0.0.1:3000:3000"
     restart: unless-stopped
 
 volumes:
