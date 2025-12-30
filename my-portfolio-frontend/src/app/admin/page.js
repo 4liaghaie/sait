@@ -114,28 +114,28 @@ export default function AdminPage() {
   };
 
   const loadLogo = async () => {
-    const json = await fetchJson(apiUrl("/api/logo"));
+    const json = await fetchJson(apiUrl("/logo"));
     setLogoPreview(json?.data?.img?.url || "");
     setLogoAlt(json?.data?.translations?.en || "");
   };
 
   const loadCategories = async () => {
-    const json = await fetchJson(apiUrl("/api/categories"));
+    const json = await fetchJson(apiUrl("/categories"));
     setCategories(json.data || []);
   };
 
   const loadImages = async () => {
-    const json = await fetchJson(apiUrl("/api/images"));
+    const json = await fetchJson(apiUrl("/images"));
     setImages(json.data || []);
   };
 
   const loadReferences = async () => {
-    const json = await fetchJson(apiUrl("/api/references"));
+    const json = await fetchJson(apiUrl("/references"));
     setReferences(json.data || []);
   };
 
   const loadTranslations = async () => {
-    const json = await fetchJson("/admin/translations");
+    const json = await fetchJson("/api/admin/translations");
     setTranslations(JSON.stringify(json.translations || {}, null, 2));
   };
 
@@ -166,7 +166,7 @@ export default function AdminPage() {
     e.preventDefault();
     const password = new FormData(e.target).get("password") || "";
     try {
-      const json = await fetchJson(apiUrl("/api/admin/login"), {
+      const json = await fetchJson(apiUrl("/admin/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
