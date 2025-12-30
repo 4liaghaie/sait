@@ -176,7 +176,9 @@ export default function CategoryGallery() {
           {images.map((item, index) => {
             const { id, Title, alt, image, originalWidth, originalHeight } =
               item;
-            const imageUrl = image?.url ? withBase(image.url) : null;
+            const imageUrl = image?.url
+              ? (image.url.startsWith("http") ? image.url : withBase(image.url))
+              : null;
 
             const aspectRatio =
               originalWidth && originalHeight
@@ -258,7 +260,7 @@ export default function CategoryGallery() {
               }}
             >
               <Image
-                src={withBase(currentImage.image.url)}
+                src={currentImage.image?.url?.startsWith("http") ? currentImage.image.url : withBase(currentImage.image?.url || "")}
                 alt={currentImage.alt || currentImage.Title || t("untitled")}
                 fill
                 className="object-contain"
