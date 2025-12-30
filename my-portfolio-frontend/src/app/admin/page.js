@@ -135,7 +135,7 @@ export default function AdminPage() {
   };
 
   const loadTranslations = async () => {
-    const json = await fetchJson("/api/admin/translations");
+    const json = await fetchJson("/admin/translations");
     setTranslations(JSON.stringify(json.translations || {}, null, 2));
   };
 
