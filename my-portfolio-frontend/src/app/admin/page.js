@@ -114,23 +114,23 @@ export default function AdminPage() {
   };
 
   const loadLogo = async () => {
-    const json = await fetchJson(apiUrl("/logo"));
+    const json = await fetchJson(apiUrl("/api/logo"));
     setLogoPreview(json?.data?.img?.url || "");
     setLogoAlt(json?.data?.translations?.en || "");
   };
 
   const loadCategories = async () => {
-    const json = await fetchJson(apiUrl("/categories"));
+    const json = await fetchJson(apiUrl("/api/categories"));
     setCategories(json.data || []);
   };
 
   const loadImages = async () => {
-    const json = await fetchJson(apiUrl("/images"));
+    const json = await fetchJson(apiUrl("/api/images"));
     setImages(json.data || []);
   };
 
   const loadReferences = async () => {
-    const json = await fetchJson(apiUrl("/references"));
+    const json = await fetchJson(apiUrl("/api/references"));
     setReferences(json.data || []);
   };
 
