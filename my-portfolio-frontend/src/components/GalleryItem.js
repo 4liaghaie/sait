@@ -5,7 +5,9 @@ const GalleryItem = ({ item }) => {
   const { Title, alt, image } = item;
 
   // Construct URL for the original image, or choose a specific format
-  const imageUrl = image?.url ? withBase(image.url) : null;
+  const imageUrl = image?.url
+    ? (image.url.startsWith("http") ? image.url : withBase(image.url))
+    : null;
 
   // Optionally, use a fallback if imageUrl is null
   if (!imageUrl) {
