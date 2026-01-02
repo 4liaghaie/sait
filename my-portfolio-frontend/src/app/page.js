@@ -229,16 +229,23 @@ export default function Home() {
               </p>
             </div>
             <div className="col-span-2 relative overflow-hidden rounded-3xl border border-border/60 bg-muted/40 h-52">
-              {images[0]?.image?.url && (
-                <Image
-                  src={withBase(images[0].image.url)}
-                  alt={images[0].Title || "Feature image"}
-                  fill
-                  sizes="(min-width: 1024px) 480px, 90vw"
-                  className="object-cover"
-                  priority
-                />
-              )}
+              {images[0]?.image?.url && (() => {
+                const heroImageUrl = withBase(images[0].image.url);
+                const isExternal = heroImageUrl?.startsWith("http") && 
+                  !heroImageUrl.includes("localhost") && 
+                  !heroImageUrl.includes("127.0.0.1");
+                return (
+                  <Image
+                    src={heroImageUrl}
+                    alt={images[0].Title || "Feature image"}
+                    fill
+                    sizes="(min-width: 1024px) 480px, 90vw"
+                    className="object-cover"
+                    priority
+                    unoptimized={isExternal}
+                  />
+                );
+              })()}
             </div>
           </CardContent>
         </Card>

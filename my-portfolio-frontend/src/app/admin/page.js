@@ -101,42 +101,93 @@ export default function AdminPage() {
     setTimeout(() => setStatus(""), 3000);
   };
 
+  const handleAuthError = () => {
+    setToken("");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("adminToken");
+    }
+    showStatus("Session expired. Please login again.");
+  };
+
   const fetchJson = async (url, opts = {}) => {
     const res = await fetch(url, opts);
-    if (!res.ok) throw new Error(await res.text());
+    
+    // Handle authentication errors
+    if (res.status === 401 || res.status === 403) {
+      const errorText = await res.text();
+      handleAuthError();
+      throw new Error("Unauthenticated. Please login again.");
+    }
+    
+    if (!res.ok) {
+      const errorText = await res.text();
+      let errorMessage = "Request failed";
+      try {
+        const errorJson = JSON.parse(errorText);
+        errorMessage = errorJson.error || errorJson.message || errorMessage;
+      } catch {
+        errorMessage = errorText || errorMessage;
+      }
+      throw new Error(errorMessage);
+    }
+    
     return res.json();
   };
 
   const loadAbout = async () => {
-    const json = await fetchJson(apiUrl("/api/about"));
-    setAboutEn(json?.data?.translations?.en || "");
-    setAboutTr(json?.data?.translations?.tr || "");
+    try {
+      const json = await fetchJson(apiUrl("/api/about"));
+      setAboutEn(json?.data?.translations?.en || "");
+      setAboutTr(json?.data?.translations?.tr || "");
+    } catch (err) {
+      console.error("Failed to load about:", err);
+    }
   };
 
   const loadLogo = async () => {
-    const json = await fetchJson(apiUrl("/api/logo"));
-    setLogoPreview(json?.data?.img?.url || "");
-    setLogoAlt(json?.data?.translations?.en || "");
+    try {
+      const json = await fetchJson(apiUrl("/api/logo"));
+      setLogoPreview(json?.data?.img?.url || "");
+      setLogoAlt(json?.data?.translations?.en || "");
+    } catch (err) {
+      console.error("Failed to load logo:", err);
+    }
   };
 
   const loadCategories = async () => {
-    const json = await fetchJson(apiUrl("/api/categories"));
-    setCategories(json.data || []);
+    try {
+      const json = await fetchJson(apiUrl("/api/categories"));
+      setCategories(json.data || []);
+    } catch (err) {
+      console.error("Failed to load categories:", err);
+    }
   };
 
   const loadImages = async () => {
-    const json = await fetchJson(apiUrl("/api/images"));
-    setImages(json.data || []);
+    try {
+      const json = await fetchJson(apiUrl("/api/images"));
+      setImages(json.data || []);
+    } catch (err) {
+      console.error("Failed to load images:", err);
+    }
   };
 
   const loadReferences = async () => {
-    const json = await fetchJson(apiUrl("/api/references"));
-    setReferences(json.data || []);
+    try {
+      const json = await fetchJson(apiUrl("/api/references"));
+      setReferences(json.data || []);
+    } catch (err) {
+      console.error("Failed to load references:", err);
+    }
   };
 
   const loadTranslations = async () => {
-    const json = await fetchJson("/api/admin/translations");
-    setTranslations(JSON.stringify(json.translations || {}, null, 2));
+    try {
+      const json = await fetchJson("/api/admin/translations");
+      setTranslations(JSON.stringify(json.translations || {}, null, 2));
+    } catch (err) {
+      console.error("Failed to load translations:", err);
+    }
   };
 
   const loadAll = async () => {
@@ -182,159 +233,189 @@ export default function AdminPage() {
   };
 
   const saveAbout = async () => {
-    await fetchJson(apiUrl("/admin/about"), {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", ...authedHeaders },
-      body: JSON.stringify({ translations: { en: aboutEn, tr: aboutTr } }),
-    });
-    showStatus("About saved");
+    try {
+      await fetchJson(apiUrl("/admin/about"), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", ...authedHeaders },
+        body: JSON.stringify({ translations: { en: aboutEn, tr: aboutTr } }),
+      });
+      showStatus("About saved");
+    } catch (err) {
+      showStatus(err.message || "Failed to save about");
+    }
   };
 
   const saveLogo = async () => {
-    const fd = new FormData();
-    if (logoFile) fd.append("img", logoFile);
-    if (logoRemote) fd.append("remoteUrl", logoRemote);
-    fd.append("alt_en", logoAlt);
-    fd.append("alt_tr", logoAlt);
-    await fetchJson(apiUrl("/admin/logo"), {
-      method: "POST",
-      headers: { ...authedHeaders },
-      body: fd,
-    });
-    showStatus("Logo saved");
-    setLogoFile(null);
-    setLogoRemote("");
-    loadLogo();
+    try {
+      const fd = new FormData();
+      if (logoFile) fd.append("img", logoFile);
+      if (logoRemote) fd.append("remoteUrl", logoRemote);
+      fd.append("alt_en", logoAlt);
+      fd.append("alt_tr", logoAlt);
+      await fetchJson(apiUrl("/admin/logo"), {
+        method: "POST",
+        headers: { ...authedHeaders },
+        body: fd,
+      });
+      showStatus("Logo saved");
+      setLogoFile(null);
+      setLogoRemote("");
+      loadLogo();
+    } catch (err) {
+      showStatus(err.message || "Failed to save logo");
+    }
   };
 
   const saveCategory = async () => {
-    const payload = {
-      title: { en: catForm.title_en, tr: catForm.title_tr },
-      description: { en: catForm.description_en, tr: catForm.description_tr },
-      position: Number(catForm.position) || 0,
-      is_active: !!catForm.active,
-    };
-    const url = catForm.id
-      ? apiUrl(`/admin/categories/${catForm.id}`)
-      : apiUrl("/admin/categories");
-    const method = catForm.id ? "PATCH" : "POST";
-    await fetchJson(url, {
-      method,
-      headers: { "Content-Type": "application/json", ...authedHeaders },
-      body: JSON.stringify(payload),
-    });
-    showStatus("Category saved");
-    setCatForm({
-      id: "",
-      title_en: "",
-      title_tr: "",
-      description_en: "",
-      description_tr: "",
-      position: 0,
-      active: true,
-    });
-    loadCategories();
-    loadImages();
+    try {
+      const payload = {
+        title: { en: catForm.title_en, tr: catForm.title_tr },
+        description: { en: catForm.description_en, tr: catForm.description_tr },
+        position: Number(catForm.position) || 0,
+        is_active: !!catForm.active,
+      };
+      const url = catForm.id
+        ? apiUrl(`/admin/categories/${catForm.id}`)
+        : apiUrl("/admin/categories");
+      const method = catForm.id ? "PATCH" : "POST";
+      await fetchJson(url, {
+        method,
+        headers: { "Content-Type": "application/json", ...authedHeaders },
+        body: JSON.stringify(payload),
+      });
+      showStatus("Category saved");
+      setCatForm({
+        id: "",
+        title_en: "",
+        title_tr: "",
+        description_en: "",
+        description_tr: "",
+        position: 0,
+        active: true,
+      });
+      loadCategories();
+      loadImages();
+    } catch (err) {
+      showStatus(err.message || "Failed to save category");
+    }
   };
 
   const deleteCategory = async () => {
     if (!catForm.id) return;
-    await fetchJson(apiUrl(`/admin/categories/${catForm.id}`), {
-      method: "DELETE",
-      headers: authedHeaders,
-    });
-    showStatus("Category deleted");
-    setCatForm({
-      id: "",
-      title_en: "",
-      title_tr: "",
-      description_en: "",
-      description_tr: "",
-      position: 0,
-      active: true,
-    });
-    loadCategories();
-    loadImages();
+    try {
+      await fetchJson(apiUrl(`/admin/categories/${catForm.id}`), {
+        method: "DELETE",
+        headers: authedHeaders,
+      });
+      showStatus("Category deleted");
+      setCatForm({
+        id: "",
+        title_en: "",
+        title_tr: "",
+        description_en: "",
+        description_tr: "",
+        position: 0,
+        active: true,
+      });
+      loadCategories();
+      loadImages();
+    } catch (err) {
+      showStatus(err.message || "Failed to delete category");
+    }
   };
 
   const saveImage = async () => {
-    const fd = new FormData();
-    fd.append("title_en", imgForm.title);
-    fd.append("title_tr", imgForm.title);
-    fd.append("alt_en", imgForm.alt);
-    fd.append("alt_tr", imgForm.alt);
-    fd.append("home", imgForm.home ? "true" : "false");
-    fd.append("categories", (imgForm.categoryIds || []).join(","));
-    fd.append("references", (imgForm.referenceIds || []).join(","));
-    if (imgFile) fd.append("image", imgFile);
-    if (imgForm.remoteUrl) fd.append("remoteUrl", imgForm.remoteUrl);
-    const url = imgForm.id
-      ? apiUrl(`/admin/images/${imgForm.id}`)
-      : apiUrl("/admin/images");
-    const method = imgForm.id ? "PATCH" : "POST";
-    await fetchJson(url, {
-      method,
-      headers: authedHeaders,
-      body: fd,
-    });
-    showStatus("Image saved");
-    setImgFile(null);
-    setImgForm({
-      id: "",
-      title: "",
-      alt: "",
-      home: false,
-      remoteUrl: "",
-      categoryIds: [],
-      referenceIds: [],
-    });
-    loadImages();
+    try {
+      const fd = new FormData();
+      fd.append("title_en", imgForm.title);
+      fd.append("title_tr", imgForm.title);
+      fd.append("alt_en", imgForm.alt);
+      fd.append("alt_tr", imgForm.alt);
+      fd.append("home", imgForm.home ? "true" : "false");
+      fd.append("categories", (imgForm.categoryIds || []).join(","));
+      fd.append("references", (imgForm.referenceIds || []).join(","));
+      if (imgFile) fd.append("image", imgFile);
+      if (imgForm.remoteUrl) fd.append("remoteUrl", imgForm.remoteUrl);
+      const url = imgForm.id
+        ? apiUrl(`/admin/images/${imgForm.id}`)
+        : apiUrl("/admin/images");
+      const method = imgForm.id ? "PATCH" : "POST";
+      await fetchJson(url, {
+        method,
+        headers: authedHeaders,
+        body: fd,
+      });
+      showStatus("Image saved");
+      setImgFile(null);
+      setImgForm({
+        id: "",
+        title: "",
+        alt: "",
+        home: false,
+        remoteUrl: "",
+        categoryIds: [],
+        referenceIds: [],
+      });
+      loadImages();
+    } catch (err) {
+      showStatus(err.message || "Failed to save image");
+    }
   };
 
   const saveReference = async () => {
-    const fd = new FormData();
-    fd.append("title_en", refForm.title_en);
-    fd.append("title_tr", refForm.title_tr);
-    fd.append("description_en", refForm.description_en);
-    fd.append("description_tr", refForm.description_tr);
-    fd.append("year", refForm.year || "");
-    fd.append("images", (refForm.imageIds || []).join(","));
-    if (refForm.logoLightFile) fd.append("logo_light", refForm.logoLightFile);
-    if (refForm.logoDarkFile) fd.append("logo_dark", refForm.logoDarkFile);
-    if (refForm.remoteLogoLight)
-      fd.append("remoteLogoLight", refForm.remoteLogoLight);
-    if (refForm.remoteLogoDark)
-      fd.append("remoteLogoDark", refForm.remoteLogoDark);
-    const url = refForm.id
-      ? apiUrl(`/admin/references/${refForm.id}`)
-      : apiUrl("/admin/references");
-    const method = refForm.id ? "PATCH" : "POST";
-    await fetchJson(url, {
-      method,
-      headers: authedHeaders,
-      body: fd,
-    });
-    showStatus("Reference saved");
-    setRefForm({
-      id: "",
-      title: "",
-      description: "",
-      year: "",
-      imageIds: [],
-      remoteLogoLight: "",
-      remoteLogoDark: "",
-    });
-    loadReferences();
+    try {
+      const fd = new FormData();
+      fd.append("title_en", refForm.title_en);
+      fd.append("title_tr", refForm.title_tr);
+      fd.append("description_en", refForm.description_en);
+      fd.append("description_tr", refForm.description_tr);
+      fd.append("year", refForm.year || "");
+      fd.append("images", (refForm.imageIds || []).join(","));
+      if (refForm.logoLightFile) fd.append("logo_light", refForm.logoLightFile);
+      if (refForm.logoDarkFile) fd.append("logo_dark", refForm.logoDarkFile);
+      if (refForm.remoteLogoLight)
+        fd.append("remoteLogoLight", refForm.remoteLogoLight);
+      if (refForm.remoteLogoDark)
+        fd.append("remoteLogoDark", refForm.remoteLogoDark);
+      const url = refForm.id
+        ? apiUrl(`/admin/references/${refForm.id}`)
+        : apiUrl("/admin/references");
+      const method = refForm.id ? "PATCH" : "POST";
+      await fetchJson(url, {
+        method,
+        headers: authedHeaders,
+        body: fd,
+      });
+      showStatus("Reference saved");
+      setRefForm({
+        id: "",
+        title_en: "",
+        title_tr: "",
+        description_en: "",
+        description_tr: "",
+        year: "",
+        imageIds: [],
+        remoteLogoLight: "",
+        remoteLogoDark: "",
+      });
+      loadReferences();
+    } catch (err) {
+      showStatus(err.message || "Failed to save reference");
+    }
   };
 
   const saveTranslations = async () => {
-    const body = { translations: JSON.parse(translations || "{}") };
-    await fetchJson("/api/admin/translations", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    showStatus("Translations saved");
+    try {
+      const body = { translations: JSON.parse(translations || "{}") };
+      await fetchJson("/api/admin/translations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      showStatus("Translations saved");
+    } catch (err) {
+      showStatus(err.message || "Failed to save translations");
+    }
   };
 
   const selectedImage = images.find((i) => i.id === imgForm.id);
