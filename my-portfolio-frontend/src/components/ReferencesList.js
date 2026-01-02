@@ -115,20 +115,20 @@ export default function ReferencesList({ references }) {
         onOpenChange={(open) => !open && closeModal()}
       >
         <DialogContent className="max-w-5xl">
+          <DialogHeader>
+            <div className="flex items-center justify-between gap-3">
+              <DialogTitle className="text-2xl">
+                {selected?.title || "Reference"}
+              </DialogTitle>
+              {selected?.year && (
+                <Badge variant="soft" className="bg-muted text-foreground">
+                  {selected.year}
+                </Badge>
+              )}
+            </div>
+          </DialogHeader>
           {selected && (
             <>
-              <DialogHeader>
-                <div className="flex items-center justify-between gap-3">
-                  <DialogTitle className="text-2xl">
-                    {selected.title}
-                  </DialogTitle>
-                  {selected.year && (
-                    <Badge variant="soft" className="bg-muted text-foreground">
-                      {selected.year}
-                    </Badge>
-                  )}
-                </div>
-              </DialogHeader>
               {selected.description && (
                 <p className="text-muted-foreground">{selected.description}</p>
               )}

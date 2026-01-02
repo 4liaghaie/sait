@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Providers } from "./providers";
 import Head from "next/head";
-import { apiUrl } from "@/lib/api";
+import { apiUrl, parseJsonResponse } from "@/lib/api";
 import { cookies } from "next/headers";
 
 const geistSans = Geist({
@@ -24,14 +24,38 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const lang = cookieStore.get("lang")?.value || "en";
-  const res = await fetch(apiUrl("/api/categories?populate=*"), {
-    next: { revalidate: 10 },
-    headers: { "Accept-Language": lang },
-  });
-  const json = await res.json();
-  const categories = json.data;
+  
+  let categories = [];
+  try {
+    const url = apiUrl("/api/categories?populate=*");
+    
+    // Create abort controller for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    
+    const res = await fetch(url, {
+      next: { revalidate: 10 },
+      headers: { "Accept-Language": lang },
+      signal: controller.signal,
+    });
+    
+    clearTimeout(timeoutId);
+    
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    
+    const json = await parseJsonResponse(res);
+    categories = json?.data || [];
+  } catch (error) {
+    // Silently handle errors - app should still render
+    if (process.env.NODE_ENV === "development") {
+      console.warn("Could not fetch categories:", error.message);
+    }
+    // Continue with empty categories array to prevent app crash
+  }
   return (
     <html lang="en" suppressHydrationWarning>
       <Head>

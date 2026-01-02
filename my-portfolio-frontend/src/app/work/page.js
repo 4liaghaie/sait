@@ -3,27 +3,47 @@ import { cookies } from "next/headers";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { apiUrl, withBase, withLang } from "@/lib/api";
+import { apiUrl, withBase, withLang, parseJsonResponse } from "@/lib/api";
 import { translations } from "@/lib/translations";
 
 async function fetchWorkData(lang) {
-  const [catsRes, imgsRes] = await Promise.all([
-    fetch(apiUrl("/api/categories"), {
-      headers: { "Accept-Language": lang },
-      cache: "no-store",
-    }),
-    fetch(withLang(apiUrl("/api/images"), lang), { cache: "no-store" }),
-  ]);
+  let categories = [];
+  let images = [];
+  
+  try {
+    const [catsRes, imgsRes] = await Promise.all([
+      fetch(apiUrl("/api/categories"), {
+        headers: { "Accept-Language": lang },
+        cache: "no-store",
+      }),
+      fetch(withLang(apiUrl("/api/images"), lang), { cache: "no-store" }),
+    ]);
 
-  if (!catsRes.ok) throw new Error("Failed to load categories");
-  if (!imgsRes.ok) throw new Error("Failed to load images");
+    if (catsRes.ok) {
+      try {
+        const catsJson = await parseJsonResponse(catsRes);
+        categories = catsJson.data || [];
+      } catch (e) {
+        // Response wasn't JSON, skip
+      }
+    }
+    
+    if (imgsRes.ok) {
+      try {
+        const imgsJson = await parseJsonResponse(imgsRes);
+        images = imgsJson.data || [];
+      } catch (e) {
+        // Response wasn't JSON, skip
+      }
+    }
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn("Could not fetch work data:", error.message);
+    }
+    // Continue with empty arrays
+  }
 
-  const [catsJson, imgsJson] = await Promise.all([
-    catsRes.json(),
-    imgsRes.json(),
-  ]);
-
-  return { categories: catsJson.data || [], images: imgsJson.data || [] };
+  return { categories, images };
 }
 
 function pickImageForCategory(categoryId, images = []) {
@@ -36,7 +56,8 @@ function pickImageForCategory(categoryId, images = []) {
 }
 
 export default async function WorkPage() {
-  const lang = cookies().get("lang")?.value || "en";
+  const cookieStore = await cookies();
+  const lang = cookieStore.get("lang")?.value || "en";
   const t = (key) => translations[lang]?.[key] ?? translations.en?.[key] ?? key;
   const { categories, images } = await fetchWorkData(lang);
 

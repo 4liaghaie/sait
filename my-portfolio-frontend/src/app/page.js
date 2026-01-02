@@ -10,7 +10,7 @@ import ReferencesList from "@/components/ReferencesList";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { apiUrl, withBase, withLang } from "@/lib/api";
+import { apiUrl, withBase, withLang, parseJsonResponse } from "@/lib/api";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function Home() {
@@ -32,7 +32,7 @@ export default function Home() {
           { cache: "no-store" }
         );
         if (!res.ok) throw new Error("Failed to fetch references");
-        const json = await res.json();
+        const json = await parseJsonResponse(res);
         setReferences(json.data || []);
       } catch (error) {
         console.error(error);
@@ -59,9 +59,23 @@ export default function Home() {
 
     try {
       const res = await fetch(withLang(apiUrl(`/api/images?${qs}`), lang));
-      const json = await res.json();
 
-      const homeOnly = json.data.filter(
+      // Stop pagination on 404 or other errors
+      if (!res.ok) {
+        setHasMore(false);
+        return;
+      }
+
+      const json = await parseJsonResponse(res);
+      const data = json?.data || [];
+
+      // Stop pagination if no data
+      if (!data || data.length === 0) {
+        setHasMore(false);
+        return;
+      }
+
+      const homeOnly = data.filter(
         (item) => item.home === true || item.attributes?.home === true
       );
 
@@ -73,7 +87,10 @@ export default function Home() {
         ...item,
       }));
 
-      if (json.data.length < pageSize) setHasMore(false);
+      // Stop pagination if we got fewer items than page size
+      if (data.length < pageSize) {
+        setHasMore(false);
+      }
 
       setImages((prev) => {
         const merged = [...prev, ...mapped];
@@ -89,6 +106,8 @@ export default function Home() {
       });
     } catch (err) {
       console.error("Error fetching images", err);
+      // Stop pagination on any error
+      setHasMore(false);
     } finally {
       setIsFetching(false);
     }

@@ -9,7 +9,7 @@ import OverlayModal from "@/components/OverlayModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { apiUrl, withBase, withLang } from "@/lib/api";
+import { apiUrl, withBase, withLang, parseJsonResponse } from "@/lib/api";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function CategoryGallery() {
@@ -28,10 +28,19 @@ export default function CategoryGallery() {
     setPage(1);
     setHasMore(true);
     fetchImages(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category, lang]);
 
+  // Separate effect to handle page changes
+  useEffect(() => {
+    if (page > 1 && category && hasMore) {
+      fetchImages(page);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
+
   async function fetchImages(pageNumber) {
-    if (!category) return;
+    if (!category || !hasMore) return;
     setIsFetching(true);
     try {
       const res = await fetch(
@@ -42,9 +51,23 @@ export default function CategoryGallery() {
           lang
         )
       );
-      const json = await res.json();
 
-      const sortedImages = json.data.sort(
+      // Stop pagination on 404 or other errors
+      if (!res.ok) {
+        setHasMore(false);
+        return;
+      }
+
+      const json = await parseJsonResponse(res);
+      const data = json?.data || [];
+
+      // Stop pagination if no data or empty array
+      if (!data || data.length === 0) {
+        setHasMore(false);
+        return;
+      }
+
+      const sortedImages = data.sort(
         (a, b) => (a.position || 0) - (b.position || 0)
       );
 
@@ -57,6 +80,7 @@ export default function CategoryGallery() {
         };
       });
 
+      // Stop pagination if we got fewer items than page size
       if (sortedImages.length < pageSize) {
         setHasMore(false);
       }
@@ -75,6 +99,8 @@ export default function CategoryGallery() {
       });
     } catch (error) {
       console.error("Error fetching images:", error);
+      // Stop pagination on any error
+      setHasMore(false);
     } finally {
       setIsFetching(false);
     }
@@ -82,19 +108,21 @@ export default function CategoryGallery() {
 
   useEffect(() => {
     function handleScroll() {
-      if (isFetching || !hasMore) return;
+      if (isFetching || !hasMore || !category) return;
       if (
         window.innerHeight + window.scrollY >=
         document.documentElement.offsetHeight - 120
       ) {
-        const nextPage = page + 1;
-        setPage(nextPage);
-        fetchImages(nextPage);
+        setPage((prevPage) => {
+          const nextPage = prevPage + 1;
+          // Fetch will be triggered by the page change useEffect
+          return nextPage;
+        });
       }
     }
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isFetching, hasMore, page, category]);
+  }, [isFetching, hasMore, category]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {

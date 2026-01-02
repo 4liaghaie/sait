@@ -21,6 +21,8 @@ services:
         NEXT_PUBLIC_API_BASE: ${NEXT_PUBLIC_API_BASE_PUBLIC:-/api}
     environment:
       - NEXT_PUBLIC_API_BASE=${NEXT_PUBLIC_API_BASE_PUBLIC:-/api}
+      - INTERNAL_API_BASE=http://backend:4000
+      - DOCKER=true
       - NODE_ENV=production
     depends_on:
       - backend

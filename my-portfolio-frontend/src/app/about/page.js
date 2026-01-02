@@ -1,25 +1,33 @@
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { apiUrl } from "@/lib/api";
+import { apiUrl, parseJsonResponse } from "@/lib/api";
 import { cookies } from "next/headers";
 import { translations } from "@/lib/translations";
 
 async function getAboutData(lang) {
-  const res = await fetch(apiUrl(`/api/about?populate=*&lang=${lang}`), {
-    headers: { "Accept-Language": lang },
-  });
-  if (!res.ok) {
-    throw new Error("Failed to fetch About data");
+  try {
+    const res = await fetch(apiUrl(`/api/about?populate=*&lang=${lang}`), {
+      headers: { "Accept-Language": lang },
+    });
+    if (!res.ok) {
+      throw new Error("Failed to fetch About data");
+    }
+    const data = await parseJsonResponse(res);
+    return data?.data?.About_text || "No content found.";
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn("Could not fetch about data:", error.message);
+    }
+    return "No content found.";
   }
-  return res.json();
 }
 
 export default async function About() {
-  const lang = cookies().get("lang")?.value || "en";
+  const cookieStore = await cookies();
+  const lang = cookieStore.get("lang")?.value || "en";
   const t = (key) => translations[lang]?.[key] ?? translations.en?.[key] ?? key;
-  const data = await getAboutData(lang);
-  const aboutContent = data?.data.About_text || "No content found.";
+  const aboutContent = await getAboutData(lang);
 
   return (
     <section className="container mx-auto px-4 py-12 space-y-10">

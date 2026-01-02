@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
-import { apiUrl, withBase } from "@/lib/api";
+import { apiUrl, withBase, parseJsonResponse } from "@/lib/api";
 
 export default function Navbar({ categories = [] }) {
   const [logoUrl, setLogoUrl] = useState("");
@@ -30,11 +30,15 @@ export default function Navbar({ categories = [] }) {
   useEffect(() => {
     async function fetchLogo() {
       try {
-        const res = await fetch(apiUrl(`/api/logo?populate=*&lang=${lang}`), { cache: "no-store" });
-        const data = await res.json();
-        const logo =
-          data?.data?.img?.formats?.medium?.url || data?.data?.img?.url;
-        setLogoUrl(logo ? withBase(logo) : "");
+        const res = await fetch(apiUrl(`/api/logo?populate=*&lang=${lang}`), {
+          cache: "no-store",
+        });
+        if (res.ok) {
+          const data = await parseJsonResponse(res);
+          const logo =
+            data?.data?.img?.formats?.medium?.url || data?.data?.img?.url;
+          setLogoUrl(logo ? withBase(logo) : "");
+        }
       } catch (error) {
         console.error("Error fetching logo:", error);
       }
@@ -56,7 +60,7 @@ export default function Navbar({ categories = [] }) {
     { href: "/contact", label: t("nav_contact") },
   ];
 
-const socialIcons = [
+  const socialIcons = [
     {
       href: "https://www.instagram.com/_muhsinzade/?utm_source=ig_web_button_share_sheet",
       icon: <Instagram className="h-5 w-5" />,
