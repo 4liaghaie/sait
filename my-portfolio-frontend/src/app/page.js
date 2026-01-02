@@ -277,6 +277,11 @@ export default function Home() {
               item;
 
             const imageUrl = image?.url ? withBase(image.url) : null;
+            
+            // Check if URL is external (from api.muhsinzade.com or other external domain)
+            const isExternal = imageUrl?.startsWith("http") && 
+              !imageUrl.includes("localhost") && 
+              !imageUrl.includes("127.0.0.1");
 
             const aspectRatio =
               originalWidth && originalHeight
@@ -313,6 +318,7 @@ export default function Home() {
                         className="object-cover transition duration-500"
                         sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, 50vw"
                         priority={index < 6}
+                        unoptimized={isExternal}
                       />
                     ) : (
                       <div className="p-4 text-muted-foreground">
@@ -366,6 +372,9 @@ export default function Home() {
                 fill
                 className="object-contain"
                 sizes="90vw"
+                unoptimized={withBase(currentImage.image.url)?.startsWith("http") && 
+                  !withBase(currentImage.image.url)?.includes("localhost") && 
+                  !withBase(currentImage.image.url)?.includes("127.0.0.1")}
               />
             </div>
             <div className="flex items-center justify-between mt-4 text-sm text-muted-foreground">

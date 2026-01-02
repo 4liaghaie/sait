@@ -207,6 +207,11 @@ export default function CategoryGallery() {
             const imageUrl = image?.url
               ? (image.url.startsWith("http") ? image.url : withBase(image.url))
               : null;
+            
+            // Check if URL is external (from api.muhsinzade.com or other external domain)
+            const isExternal = imageUrl?.startsWith("http") && 
+              !imageUrl.includes("localhost") && 
+              !imageUrl.includes("127.0.0.1");
 
             const aspectRatio =
               originalWidth && originalHeight
@@ -242,6 +247,7 @@ export default function CategoryGallery() {
                         fill
                         className="object-cover transition duration-500"
                         sizes="(min-width: 1024px) 25vw, 50vw"
+                        unoptimized={isExternal}
                       />
                     ) : (
                       <div className="p-4 text-muted-foreground">{t("no_image")}</div>
@@ -293,6 +299,10 @@ export default function CategoryGallery() {
                 fill
                 className="object-contain"
                 sizes="90vw"
+                unoptimized={(() => {
+                  const url = currentImage.image?.url?.startsWith("http") ? currentImage.image.url : withBase(currentImage.image?.url || "");
+                  return url?.startsWith("http") && !url.includes("localhost") && !url.includes("127.0.0.1");
+                })()}
               />
             </div>
             <div className="flex items-center justify-between mt-4 text-sm text-muted-foreground">
