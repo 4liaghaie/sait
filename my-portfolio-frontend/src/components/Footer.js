@@ -2,7 +2,12 @@
 import Link from "next/link";
 import { Facebook, Instagram, Linkedin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
+} from "@/components/ui/card";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function Footer() {
@@ -45,7 +50,11 @@ export default function Footer() {
                   asChild
                   className="rounded-full border-border/80 hover:border-border"
                 >
-                  <Link href={item.href} target="_blank" aria-label={item.label}>
+                  <Link
+                    href={item.href}
+                    target="_blank"
+                    aria-label={item.label}
+                  >
                     {item.icon}
                   </Link>
                 </Button>
@@ -54,7 +63,10 @@ export default function Footer() {
           </CardContent>
         </Card>
         <div className="flex flex-col sm:flex-row items-center justify-between text-sm text-muted-foreground mt-6">
-          <p>&copy; {new Date().getFullYear()} Saeed Muhsinzade. All rights reserved.</p>
+          <p>
+            &copy; {new Date().getFullYear()} Sait Muhsinzade. All rights
+            reserved.
+          </p>
           <p className="mt-2 sm:mt-0">{t("footer_tagline")}</p>
         </div>
       </div>

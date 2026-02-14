@@ -81,12 +81,33 @@ export default function Navbar({ categories = [] }) {
   const themeToggle = (
     <Button
       aria-label="Toggle theme"
+      aria-pressed={isDark}
       variant="ghost"
-      size="icon"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="border border-transparent hover:border-border/80"
+      className="relative h-9 w-16 rounded-full border border-border/80 bg-muted/40 p-0 hover:bg-muted/60"
     >
-      {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+      <span className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-200/40 to-sky-300/40 dark:from-slate-700/60 dark:to-indigo-500/40" />
+      <span
+        className={cn(
+          "absolute top-1 h-7 w-7 rounded-full bg-background shadow-md ring-1 ring-border/80 transition-all duration-500 ease-out",
+          isDark ? "left-8 rotate-[360deg]" : "left-1 rotate-0",
+        )}
+      >
+        <span className="relative flex h-full w-full items-center justify-center">
+          <Sun
+            className={cn(
+              "absolute h-4 w-4 text-amber-500 transition-all duration-300",
+              isDark ? "scale-0 opacity-0 -rotate-90" : "scale-100 opacity-100 rotate-0",
+            )}
+          />
+          <Moon
+            className={cn(
+              "absolute h-4 w-4 text-indigo-500 transition-all duration-300",
+              isDark ? "scale-100 opacity-100 rotate-0" : "scale-0 opacity-0 rotate-90",
+            )}
+          />
+        </span>
+      </span>
     </Button>
   );
 

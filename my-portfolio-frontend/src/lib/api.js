@@ -19,23 +19,25 @@ export const API_BASE = (() => {
     if (internal) {
       return stripTrailingSlash(internal);
     }
-    
+
     // Default to localhost for local development
     // Only use backend:4000 if explicitly in Docker (check for DOCKER env var)
     // Note: NODE_ENV can be "production" even in local builds, so we check for DOCKER specifically
     // Also check if we're running in a container by checking for common Docker env vars
-    const isDocker = 
-      process.env.DOCKER === "true" || 
+    const isDocker =
+      process.env.DOCKER === "true" ||
       process.env.IN_DOCKER === "true" ||
       (process.env.HOSTNAME && process.env.HOSTNAME.includes("backend"));
-    
-    const defaultBase = isDocker ? "http://backend:4000" : "http://localhost:4000";
-    
+
+    const defaultBase = isDocker
+      ? "http://backend:4000"
+      : "https://api.muhsinzade.com";
+
     // Log in development to help debug
     if (process.env.NODE_ENV === "development") {
       console.log(`[API] Using API_BASE: ${defaultBase} (Docker: ${isDocker})`);
     }
-    
+
     return stripTrailingSlash(defaultBase);
   }
 
@@ -45,13 +47,13 @@ export const API_BASE = (() => {
   if (browserBase) {
     return stripTrailingSlash(browserBase);
   }
-  
+
   // For local development, default to localhost backend
   // In production, this would be handled by nginx proxy
   if (process.env.NODE_ENV === "development") {
-    return "http://localhost:4000";
+    return "https://api.muhsinzade.com";
   }
-  
+
   // Fallback to relative path (for production with nginx)
   return "/api";
 })();
@@ -109,7 +111,9 @@ export const parseJsonResponse = async (res) => {
   const contentType = res.headers.get("content-type");
   if (!contentType || !contentType.includes("application/json")) {
     const text = await res.text();
-    throw new Error(`Expected JSON but got ${contentType}. Response: ${text.substring(0, 100)}`);
+    throw new Error(
+      `Expected JSON but got ${contentType}. Response: ${text.substring(0, 100)}`,
+    );
   }
   return res.json();
 };

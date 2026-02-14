@@ -22,14 +22,14 @@ export default function Home() {
   const [isFetching, setIsFetching] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
-  const pageSize = 25;
+  const pageSize = 100;
 
   useEffect(() => {
     async function loadReferences() {
       try {
         const res = await fetch(
           withLang(apiUrl("/api/references?populate=*"), lang),
-          { cache: "no-store" }
+          { cache: "no-store" },
         );
         if (!res.ok) throw new Error("Failed to fetch references");
         const json = await parseJsonResponse(res);
@@ -76,11 +76,11 @@ export default function Home() {
       }
 
       const homeOnly = data.filter(
-        (item) => item.home === true || item.attributes?.home === true
+        (item) => item.home === true || item.attributes?.home === true,
       );
 
       const sorted = homeOnly.sort(
-        (a, b) => (a.position || 0) - (b.position || 0)
+        (a, b) => (a.position || 0) - (b.position || 0),
       );
 
       const mapped = sorted.map((item) => ({
@@ -137,11 +137,11 @@ export default function Home() {
       if (selectedImageIndex === null) return;
       if (e.key === "ArrowLeft") {
         setSelectedImageIndex((idx) =>
-          idx === 0 ? images.length - 1 : idx - 1
+          idx === 0 ? images.length - 1 : idx - 1,
         );
       } else if (e.key === "ArrowRight") {
         setSelectedImageIndex((idx) =>
-          idx === images.length - 1 ? 0 : idx + 1
+          idx === images.length - 1 ? 0 : idx + 1,
         );
       } else if (e.key === "Escape") {
         setSelectedImageIndex(null);
@@ -229,23 +229,25 @@ export default function Home() {
               </p>
             </div>
             <div className="col-span-2 relative overflow-hidden rounded-3xl border border-border/60 bg-muted/40 h-52">
-              {images[0]?.image?.url && (() => {
-                const heroImageUrl = withBase(images[0].image.url);
-                const isExternal = heroImageUrl?.startsWith("http") && 
-                  !heroImageUrl.includes("localhost") && 
-                  !heroImageUrl.includes("127.0.0.1");
-                return (
-                  <Image
-                    src={heroImageUrl}
-                    alt={images[0].Title || "Feature image"}
-                    fill
-                    sizes="(min-width: 1024px) 480px, 90vw"
-                    className="object-cover"
-                    priority
-                    unoptimized={isExternal}
-                  />
-                );
-              })()}
+              {images[0]?.image?.url &&
+                (() => {
+                  const heroImageUrl = withBase(images[0].image.url);
+                  const isExternal =
+                    heroImageUrl?.startsWith("http") &&
+                    !heroImageUrl.includes("localhost") &&
+                    !heroImageUrl.includes("127.0.0.1");
+                  return (
+                    <Image
+                      src={heroImageUrl}
+                      alt={images[0].Title || "Feature image"}
+                      fill
+                      sizes="(min-width: 1024px) 480px, 90vw"
+                      className="object-cover"
+                      priority
+                      unoptimized={isExternal}
+                    />
+                  );
+                })()}
             </div>
           </CardContent>
         </Card>
@@ -284,10 +286,11 @@ export default function Home() {
               item;
 
             const imageUrl = image?.url ? withBase(image.url) : null;
-            
+
             // Check if URL is external (from api.muhsinzade.com or other external domain)
-            const isExternal = imageUrl?.startsWith("http") && 
-              !imageUrl.includes("localhost") && 
+            const isExternal =
+              imageUrl?.startsWith("http") &&
+              !imageUrl.includes("localhost") &&
               !imageUrl.includes("127.0.0.1");
 
             const aspectRatio =
@@ -379,9 +382,11 @@ export default function Home() {
                 fill
                 className="object-contain"
                 sizes="90vw"
-                unoptimized={withBase(currentImage.image.url)?.startsWith("http") && 
-                  !withBase(currentImage.image.url)?.includes("localhost") && 
-                  !withBase(currentImage.image.url)?.includes("127.0.0.1")}
+                unoptimized={
+                  withBase(currentImage.image.url)?.startsWith("http") &&
+                  !withBase(currentImage.image.url)?.includes("localhost") &&
+                  !withBase(currentImage.image.url)?.includes("127.0.0.1")
+                }
               />
             </div>
             <div className="flex items-center justify-between mt-4 text-sm text-muted-foreground">

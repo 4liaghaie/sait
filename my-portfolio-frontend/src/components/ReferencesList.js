@@ -114,8 +114,8 @@ export default function ReferencesList({ references }) {
         open={Boolean(selected)}
         onOpenChange={(open) => !open && closeModal()}
       >
-        <DialogContent className="max-w-5xl">
-          <DialogHeader>
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-5xl max-h-[85vh] overflow-y-auto p-4 sm:p-6">
+          <DialogHeader className="pr-10">
             <div className="flex items-center justify-between gap-3">
               <DialogTitle className="text-2xl">
                 {selected?.title || "Reference"}

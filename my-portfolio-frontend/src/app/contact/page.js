@@ -34,6 +34,18 @@ export default function Contact() {
             </Badge>
             <h2 className="text-3xl font-bold">{t("contact_title")}</h2>
             <p className="text-muted-foreground">{t("contact_subtitle")}</p>
+            <div className="text-sm text-muted-foreground space-y-1 pt-2">
+              <p>
+                <a href="mailto:saitmuhsinzade@gmail.com" className="hover:underline">
+                  saitmuhsinzade@gmail.com
+                </a>
+              </p>
+              <p>
+                <a href="tel:+905373515560" className="hover:underline">
+                  +90 5373515560
+                </a>
+              </p>
+            </div>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">

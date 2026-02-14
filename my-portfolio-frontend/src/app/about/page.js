@@ -33,7 +33,10 @@ export default async function About() {
     <section className="container mx-auto px-4 py-12 space-y-10">
       <div className="grid lg:grid-cols-[1.3fr,0.9fr] gap-10 items-start">
         <div className="space-y-6">
-          <Badge variant="outline" className="bg-white/70 dark:bg-card/60">
+          <Badge
+            variant="outline"
+            className="bg-white/70 dark:bg-card/60 text-foreground/80"
+          >
             {t("about_badge")}
           </Badge>
           <h1 className="text-4xl md:text-5xl font-semibold leading-tight">
