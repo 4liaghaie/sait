@@ -143,9 +143,7 @@ export default function CategoryGallery() {
         <Button
           variant="outline"
           onClick={() => {
-            const nextPage = page + 1;
-            setPage(nextPage);
-            fetchImages(nextPage);
+            setPage((prevPage) => prevPage + 1);
           }}
           disabled={isFetching || !hasMore}
         >
@@ -172,25 +170,16 @@ export default function CategoryGallery() {
                 : withBase(image.url)
               : null;
 
-            // Check if URL is external (from api.muhsinzade.com or other external domain)
-            const isExternal =
-              imageUrl?.startsWith("http") &&
-              !imageUrl.includes("localhost") &&
-              !imageUrl.includes("127.0.0.1");
-
             const aspectRatio =
               originalWidth && originalHeight
                 ? `${originalWidth}/${originalHeight}`
                 : "4/5";
 
-            const randomX = Math.floor(Math.random() * 120 - 60);
-            const randomY = Math.floor(Math.random() * 120 - 60);
-
             return (
               <motion.div
                 key={id}
                 className="group"
-                initial={{ opacity: 0, x: randomX, y: randomY }}
+                initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, x: 0, y: 0 }}
                 transition={{
                   type: "spring",
@@ -211,7 +200,6 @@ export default function CategoryGallery() {
                         fill
                         className="object-cover transition duration-500"
                         sizes="(min-width: 1024px) 25vw, 50vw"
-                        unoptimized={isExternal}
                       />
                     ) : (
                       <div className="p-4 text-muted-foreground">
