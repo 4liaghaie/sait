@@ -224,7 +224,7 @@ export default function Home() {
             </div>
             <div className="rounded-2xl border border-border/60 bg-white/80 dark:bg-card/70 p-4 flex flex-col">
               <p className="text-4xl font-bold">{references.length}</p>
-              <p className="text-background text-sm mt-1">
+              <p className="text-muted-foreground text-sm mt-1">
                 {t("hero_clients")}
               </p>
             </div>

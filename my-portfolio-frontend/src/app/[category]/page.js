@@ -11,6 +11,24 @@ import { Card } from "@/components/ui/card";
 import { apiUrl, withBase, withLang, parseJsonResponse } from "@/lib/api";
 import { useLanguage } from "@/context/LanguageContext";
 
+function normalizeImageUrl(rawUrl) {
+  if (!rawUrl) return null;
+  const resolved = withBase(rawUrl);
+
+  // If backend returns a Next.js optimizer URL, extract the original image URL.
+  if (resolved.includes("/_next/image?")) {
+    try {
+      const parsed = new URL(resolved);
+      const original = parsed.searchParams.get("url");
+      if (original) return decodeURIComponent(original);
+    } catch {
+      return resolved;
+    }
+  }
+
+  return resolved;
+}
+
 export default function CategoryGallery() {
   const { lang, t } = useLanguage();
   const { category } = useParams();
@@ -164,11 +182,11 @@ export default function CategoryGallery() {
           {images.map((item, index) => {
             const { id, Title, alt, image, originalWidth, originalHeight } =
               item;
-            const imageUrl = image?.url
-              ? image.url.startsWith("http")
-                ? image.url
-                : withBase(image.url)
-              : null;
+            const imageUrl = normalizeImageUrl(image?.url);
+            const isExternal =
+              imageUrl?.startsWith("http") &&
+              !imageUrl.includes("localhost") &&
+              !imageUrl.includes("127.0.0.1");
 
             const aspectRatio =
               originalWidth && originalHeight
@@ -200,6 +218,7 @@ export default function CategoryGallery() {
                         fill
                         className="object-cover transition duration-500"
                         sizes="(min-width: 1024px) 25vw, 50vw"
+                        unoptimized={isExternal}
                       />
                     ) : (
                       <div className="p-4 text-muted-foreground">
